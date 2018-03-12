@@ -1,0 +1,369 @@
+<div class="container">
+    <h1>Tutorial</h1>
+</div>
+
+
+<div class="container" ng-show="section1_show">
+    <h2>WF1b Claim Mutation</h2>
+
+    <p>After claims have been generated, the second task is to modify the claim's information content.</p>
+
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>What is a Mutation?</h4>
+            </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="ebox">
+                <p>True claims will be distorted or mutated as part of the claim generation workflow. This may be achieved by making the sentence negative, substituting words or ideas or by making words more or less specific.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>What types of mutations will there be?</h4>
+            </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="ebox">
+                For each claim you will be asked to make the following mutations:
+                <ol>
+                    <li>Rephrase the original claim</li>
+                    <li>Negate the meaning.</li>
+                    <li>Similar item/action substitution.</li>
+                    <li>Plausible alternative item/action substitution that's unrelated</li>
+                    <li>Make the sentence more specific (so that it implies the original)</li>
+                    <li>Make the sentence more general (so that is implied by the original).</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>How many mutations should I generate?</h4>
+            </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="ebox">
+                <p>You should aim to generate 1-2 mutations for each box</p>
+                <p>If it is not possible to make a mutation, leave the box blank.</p>
+        </div>
+    </div>
+
+    <h3>Example</h3>
+    <hr />
+
+
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>Modifying Claims About</h4>
+            </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="ebox">
+                <h4><strong>{{entity}}</strong></h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>Source Sentence</h4>
+                <p>This is the sentence that is used to substantiate your claims about {{entity}}</p>
+            </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <article class="sentence">{{sentence}}</article>
+            <article class="context" ng-show="showcontext">{{context_before}} <strong>{{sentence}}</strong> {{context_after}}</article>
+            <a href="javascript:void(0)" ng-hide="showcontext" ng-click="toggleContext()">Show Context</a>
+            <a href="javascript:void(0)" ng-show="showcontext" ng-click="toggleContext()">Hide Context</a>
+
+        </div>
+
+    </div>
+
+
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>Dictionary</h4>
+                <p>Click the word for a definition. These definitions can be used to support the claims you write</p>
+            </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="ebox">
+                <div class="dictionary_item" ng-repeat="(key, value) in dictionary"><h4><a href="javascript:void(0)" ng-click="show_dictionary_item = ! show_dictionary_item">{{key}}</a></h4> <div ng-show="show_dictionary_item">{{value}}</div></div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="row topmargin">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="callout">
+                <h4>Modified Claims (one claim per line)</h4>
+
+                <p>Aim to spend about 2 minutes generating these claims. </p>
+
+                <p>You are allowed to incorporate your own world knowledge in making these modifications.</p>
+
+                <p>If it is not possible to generate facts or misinformation, leave the box blank.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row topmargin">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="callout left">
+                <div class="ebox">
+                    <h4>Original Claim: India borders 6 countries.</h4>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="dictionary_item">
+                <div class="ebox" style="background-color:#f6fca5  !important;">
+                    <h4>Rephrase the original claim (Type 1)</h4>
+                    <p>Modify the claim by rephrasing it or providing a paraphrase so that the meaning is preserved. You should aim to substitute entites and relations with synonyms if possible. </p>
+
+                    <p>The mutated claim must be about {{entity}}. </p>
+
+
+
+                    <textarea>There are six nations that India borders.
+India shares a land border with six other nations.</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="dictionary_item">
+                <div class="ebox" style="background-color:#FCD8CF !important; ">
+                    <h4>Negate the original claim (Type 2)</h4>
+                    <p>Change the sentence to negate the meaning.</p>
+
+                    <p>The mutated claim must be about {{entity}}. </p>
+
+
+                    <textarea>India shares a border with only one other country.
+India only shares a land border with China.
+India does not border any other countries.</textarea>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="dictionary_item">
+                <div class="ebox" style="background-color:#DFD5F1  !important;">
+                    <h4>Substitution for a similar entity and/or relation (Type 3)</h4>
+                    <p>Substitute either a relation, property and/or an attribute of {{entity}} in the claim to something else from the same set of things.</p>
+
+                    <p>The mutated claim must be about {{entity}}. </p>
+
+                    <textarea>India shares a river with six other countries.
+India shares a border with six other islands.</textarea>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="dictionary_item">
+                <div class="ebox" style="background-color:#A8CCC9  !important;">
+                    <h4>Substitution for a dissimilar entity and/or relation  (Type 4)</h4>
+                    <p>Substitute either a relation, property and/or an attribute of {{entity}} in the claim to something else from a different set of things.</p>
+
+                    <p>The mutated claim must be about {{entity}}. </p>
+
+                    <textarea>India shares an army with six other countries.
+India shares trade relations with six other countries.
+India welcomes tourists from six other countries.
+India welcomes tourists from six nationalities.</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row topmargin">
+
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="dictionary_item">
+                <div class="ebox" style="background-color:#fffae3  !important">
+                    <h4>Make the Claim more Specific (So that the new claim implies the original) (Type 5)</h4>
+                    <p>Modify the claim by replacing either a relation, property and/or an attribute of {{entity}} to something more specific that implies the original claim.</p>
+
+                    <p>The mutated claim must be about {{entity}}. </p>
+
+
+
+                    <textarea>India borders China, Nepal, Pakistan, Bhutan, Burma and Bangladesh.</textarea>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="dictionary_item">
+                <div class="ebox" style="background-color:#beebe6  !important;">
+
+                    <h4>Make the Claim more General (So that the new claim is implied by the original) (Type 6)</h4>
+                    <p>Modify the claim by replacing either a relation, property and/or an attribute of {{entity}} to something more general that is implied by the original claim.</p>
+
+                    <p>The mutated claim must be about {{entity}}. </p>
+
+
+
+                    <textarea>India shares land borders with other countries.</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+          <div class="row topmargin">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="callout left">
+                    <div class="ebox">
+                        <h4>The Republic of India is situated between Pakistan and Burma.</h4>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="row topmargin">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <div class="dictionary_item">
+                    <div class="ebox" style="background-color:#f6fca5  !important;">
+                        <h4>Rephrase the original claim (Type 1)</h4>
+                        <p>Modify the claim by rephrasing it or providing a paraphrase so that the meaning is preserved. You should aim to substitute entites and relations with synonyms if possible. </p>
+
+                        <p>The mutated claim must be about {{entity}}. </p>
+
+
+
+                        <textarea>Pakistan and Burma are on either side of India.</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <div class="dictionary_item">
+                    <div class="ebox" style="background-color:#FCD8CF !important; ">
+                        <h4>Negate the original claim (Type 2)</h4>
+                        <p>Change the sentence to negate the meaning.</p>
+
+                        <p>The mutated claim must be about {{entity}}. </p>
+
+
+                        <textarea>India doesn't share a border with Burma.
+There are no land borders in India.</textarea>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row topmargin">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <div class="dictionary_item">
+                    <div class="ebox" style="background-color:#DFD5F1  !important;">
+                        <h4>Substitution for a similar entity and/or relation (Type 3)</h4>
+                        <p>Substitute either a relation, property and/or an attribute of {{entity}} in the claim to something else from the same set of things.</p>
+
+                        <p>The mutated claim must be about {{entity}}. </p>
+
+                        <textarea>India is situated between China and Burma.</textarea>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <div class="dictionary_item">
+                    <div class="ebox" style="background-color:#A8CCC9  !important;">
+                        <h4>Substitution for a dissimilar entity and/or relation  (Type 4)</h4>
+                        <p>Substitute either a relation, property and/or an attribute of {{entity}} in the claim to something else from a different set of things.</p>
+
+                        <p>The mutated claim must be about {{entity}}. </p>
+
+                        <textarea>India shares mining rights with Pakistan and Burma.
+India is situated between the Atlantic and Indian Oceans.</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row topmargin">
+
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <div class="dictionary_item">
+                    <div class="ebox" style="background-color:#fffae3  !important">
+                        <h4>Make the Claim more Specific (So that the new claim implies the original) (Type 5)</h4>
+                        <p>Modify the claim by replacing either a relation, property and/or an attribute of {{entity}} to something more specific that implies the original claim.</p>
+
+                        <p>The mutated claim must be about {{entity}}. </p>
+
+
+
+                        <textarea>India has a western border with Pakistan and an eastern border with Burma.
+India is west of Burma, and east of Pakistan.</textarea>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <div class="dictionary_item">
+                    <div class="ebox" style="background-color:#beebe6  !important;">
+
+                        <h4>Make the Claim more General (So that the new claim is implied by the original) (Type 6)</h4>
+                        <p>Modify the claim by replacing either a relation, property and/or an attribute of {{entity}} to something more general that is implied by the original claim.</p>
+
+                        <p>The mutated claim must be about {{entity}}. </p>
+
+
+
+                        <textarea>Pakistan and Burma are on either sides of India.</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+    <div class="navigation_actions"><button ng-click="tryout()" class="btn btn-primary">Try it out!</button></div>
+
+</div>
+</div>

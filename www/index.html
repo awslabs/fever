@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+
+<html>
+
+    
+    <head>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous" />
+
+        <link rel="stylesheet" href="/css/style.css?n=11" />
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-route.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-sanitize.js"></script>
+
+
+        <script src="/js/Chart.bundle.min.js"></script>
+        <script src="/js/angular-chart.min.js"></script>
+        <script src="/js/sticky.js?n=12"></script>
+        <script src="/js/app.js?n=22"></script>
+
+
+    </head>
+    
+    <body ng-app="annotateapp">
+
+
+        <header class="topmenu">
+            <div class="container">
+                <div style="float:right; text-align:right; line-height:15px; padding-top:10px;">
+                    Welcome @{{username}}<br />
+                    <strong>Claims Done</strong>: This Session: {{session_count}}, Today: (WF1: {{total_count}}, WF2: {{total_count_wf2}})
+                </div>
+
+                <div style="float:left;">
+                    <h1 style="margin:0; padding:0; line-height:50px; font-size:20px;"><a href="/" style="color:white;">Fact Extraction and Verification</a></h1>
+                </div>
+
+            </div>
+
+        </header>
+        <div ng-view></div>
+        
+    </body>
+
+</html>

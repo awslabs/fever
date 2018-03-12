@@ -1,0 +1,100 @@
+
+<div class="container">
+    <h1>Feedback / Self-Assessment (WF1a)</h1>
+
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>Generating Claims About</h4>
+            </div>
+        </div>
+            
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="ebox">
+                <h4><strong>{{entity}}</strong></h4>
+            </div>
+        </div>
+    </div>
+        
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>Source Sentence</h4>
+                <p>This is the sentence that is used to substantiate your claims about {{entity}}</p>
+            </div>
+        </div>
+            
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <article class="sentence">{{sentence}}</article>
+            <article class="context" ng-show="showcontext">{{context_before}} <strong>{{sentence}}</strong> {{context_after}}</article>
+            <a href="javascript:void(0)" ng-hide="showcontext" ng-click="toggleContext()">Show Context</a>
+            <a href="javascript:void(0)" ng-show="showcontext" ng-click="toggleContext()">Hide Context</a>
+        
+        </div>
+        
+    </div>
+    
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>Dictionary</h4>
+                <p>Click the word for a definition. These definitions can be used to support the claims you write or make the claims more complex by making a deduction using the dictionary definitions</p>
+                <p>The dictionary comes from the blue links on Wikipedia</p>
+            </div>
+        </div>
+            
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">  
+            <div class="ebox">
+                <div class="dictionary_item" ng-repeat="(key, value) in dictionary"><h4><a href="javascript:void(0)" ng-click="show_dictionary_item = ! show_dictionary_item">{{key}}</a></h4> <div ng-show="show_dictionary_item">{{value}}</div></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>Claims You Wrote</h4>
+
+            </div>
+        </div>
+            
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">  
+            <textarea disabled="disabled" ng-model="true_claims"></textarea>
+        </div>
+    </div>
+
+
+
+
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>Claims we came up with</h4>
+
+            </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <textarea disabled="disabled" ng-model="our_claims"></textarea>
+        </div>
+    </div>
+
+    <div class="row">
+        
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+        </div>
+        
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+    
+            <form class="navigation_actions" ng-submit="submit()">
+                <input type="submit" name="submit" value="Next Example" class="btn btn-primary"/>
+            </form>
+        </div>
+        
+        
+
+
+        
+    </div>
+    
+</div>

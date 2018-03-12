@@ -1,0 +1,266 @@
+<div class="container-fluid">
+    <h1>Claim Labelling Task (WF2)</h1>
+    
+    
+    <div class="row bottommargin">
+
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="callout">
+                <h4>Step 1: Filter Relevant Evidence</h4>
+
+                <p>The objective of this task is to filter which sentences from Wikipedia that provide evidence that either supports or refutes claims.</p>
+
+                <ul>
+                    <li>You are given 1 claim and part of the Wikipedia article it came from.</li>
+                    <li>You should find evidence that supports or refutes this claim. </li>
+                    <li>Evidience must be grouped together in "verdicts". Each verdict must form a chain of reasoning that provides all the information needed to verify the claim.</li>
+                    <li><strong>You can add additional articles that provide more source information to verify this claim.</strong>  Use your best judgement here to add relevant information.</li>
+                    <li>We have extracted the individual sentences (in gray boxes) and grouped them by paragraph.</li>
+                </ul>
+
+                <h4>What counts as evidence?</h4>
+                <p>Justifications must be made using information within the Wikipedia pages. You should avoid applying your own world knowledge.</p>
+
+                <p>Direct evidence</p>
+                <ul>
+                    <li>Sentence directly states information that supports/refutes the claim</li>
+                    <li>Sentence states information that is synonymous with information in the claim</li>
+                    <li>Sentence refutes the claim through negation or quantification</li>
+                    <li>Sentence provides information about a different entity and only one entity is permitted (e.g. place of birth can only be one place)</li>
+                </ul>
+                <p>More justification needed:</p>
+                <ul><li>Sentence provides information about something that is more general or specific than the claim.</li></ul>
+<p>In this case, look up the item and add this as supporting evidence.</p>
+                <em>E.g. “Beidha is in the Middle East”. Is justified using the sentences “Beidha is in …. near Jordan” from the original page and “Jordan is considered to be among the safest of Arab countries in the Middle East” from the wiki page for Jordan.</em>
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+<div class="container-fluid" sticky use-placeholder="true" style="background:white; padding-top:20px !important; padding-bottom:20px !important; border-bottom:1px solid #555;">
+
+    <div class="row">
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+            <div class="callout left">
+                <h4>Claim</h4>
+            </div>
+        </div>
+
+        <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+            <div class="ebox">
+                <h4><strong>{{claim.text}}</strong></h4>
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <div class="row" style="margin-top:20px !important">
+
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+            <h5 style="padding:0; margin:0;">Status:</h5>{{selected_count}} sentences selected. {{docs_count}} documents added
+
+        </div>
+
+        <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+
+            <div>
+                <div style="float:right">
+
+                    <button class="btn">Skip</button>
+                    <button class="btn btn-warning">Flag for Review</button>
+                </div>
+
+
+                <button class="btn btn-primary" ng-hide="showModal2" ng-click="showModal2 = true">Finished Filtering</button>
+
+
+                <button class="btn" ng-show="showModal2" ng-click="showModal2 = false">Back to Filtering</button>
+
+                <button class="btn" ng-hide="showModal2" ng-click="showModal1 = true"><span class="glyphicon glyphicon-plus"></span>Add Extra Page</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid" ng-hide="showModal2">
+
+    <div class="row topmargin">
+
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+            <div class="callout left">
+                <h4>Wikipedia article for {{entity}}</h4>
+            </div>
+        </div>
+
+        <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+
+
+                <div class="" ng-repeat="line in lines track by $index" ng-init='sent_idx = $index; words=line.split("\t")[1].split(" ");' ng-class="{'ebox': words.length>1, 'pskip': words.length<=1 }">
+
+                        <div style="display:table-cell;padding-right:10px; line-height:100%" ng-show="words.length>1" >
+                            <input type="checkbox" ng-value="1" ng-attr-name="select_sent{{entity}}_{{sent_idx}}" ng-attr-id="sent_sup{{entity}}_{{sent_idx}}" ng-change="sent_selections_change()" ng-model="$parent.sent_selections[entity][sent_idx]" />
+                         </div>
+
+                        <div style="display:table-cell">
+                            <label ng-attr-for="sent_sup{{entity}}_{{sent_idx}}" style="font-weight:normal !important;">
+                                <span ng-repeat="block in formatted_body[sent_idx]">
+                                    <span ng-show="block['link']!=null">
+                                        <a ng-click="addEvidence(block['link'])">{{block['text']}}</a>
+                                    </span>
+
+                                    <span ng-hide="block['link']!=null">
+                                        {{block['text']}}
+                                    </span>
+
+                                </span>
+                            </label>
+                        </div>
+                </div>
+        </div>
+
+    </div>
+
+
+</div>
+
+<div class="container-fluid" ng-repeat="(canonical_entity,wiki) in wikis" ng-init="entity=wiki[0]; blocks=wiki[1]; lines=wiki[3]; canonical_entity=wiki[2];" ng-hide="showModal2 || entity == $parent.entity">
+    <div class="row topmargin">
+
+
+
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+            <div class="callout left">
+                <h4>Wikipedia article for {{entity}}</h4>
+                <button class="btn btn-danger" confirmed-click="removeEntity(entity)" ng-confirm-click="Removing {{entity}} will also remove its annotations."><span class="glyphicon glyphicon-minus"></span>Remove</button>
+            </div>
+        </div>
+
+
+        <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+
+
+
+            <div class="" ng-repeat="line in lines track by $index" ng-init='sent_idx = $index; words=line.split("\t")[1].split(" ");' ng-class="{'ebox': words.length>1, 'pskip': words.length<=1 }">
+
+                <div style="display:table-cell;padding-right:10px; line-height:100%" ng-show="words.length>1" >
+                    <input type="checkbox" ng-value="1" ng-attr-name="select_sent{{canonical_entity}}_{{sent_idx}}" ng-attr-id="sent_sup{{canonical_entity}}_{{sent_idx}}" ng-change="sent_selections_change()" ng-model="$parent.sent_selections[canonical_entity][sent_idx]" />
+                 </div>
+
+                <div style="display:table-cell">
+                    <label ng-attr-for="sent_sup{{canonical_entity}}_{{sent_idx}}" style="font-weight:normal !important;">
+                        <span ng-repeat="block in blocks[sent_idx]">
+                            <span ng-show="block['link']!=null">
+                                {{block['text']}}
+                            </span>
+
+                            <span ng-hide="block['link']!=null">
+                                {{block['text']}}
+                            </span>
+
+                        </span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<modal visible="showModal1" on-sown="modalOneShown()" on-hide="modalOneHide()">
+<modal-header title="Add Another Page"></modal-header>
+<modal-body>
+    <h3>Add Your Wikipedia Page</h3>
+    <p>Search for a relevant page from Wikipedia (using <a href="http://google.com" target="_blank">Google</a> or <a href="https://en.wikipedia.org" target="_blank">Wikipedia</a>) and paste the URL in the box below</p>
+    <input ng-model="customAddUrl" placeholder="e.g. https://en.wikipedia.org/wiki/Keanu_Reeves or Reality_television" name="addcustom" style="width:100%;margin-bottom:10px;display:block" /><button ng-click="addCustom(customAddUrl)" class="btn">Add</button>
+
+    <h3>Related Pages</h3>
+    <div style="margin-bottom:20px; " ng-repeat="item in extra_context" ng-hide="wikis.map(wikiNames).includes(item)">
+        <button class="btn" ng-click="addItem(item); hide(1)">Add</button>
+
+        {{item}}
+    </div>
+</modal-body>
+</modal>
+
+
+
+<div class="container-fluid" ng-show="showModal2">
+
+
+    <div class="row topmargin">
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4" >
+            <div class="callout left">
+                <h4><span class="glyphicon glyphicon-ok"></span> Supports</h4>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row topmargin">
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4" >
+            <div class="callout left">
+                <h4><span class="glyphicon glyphicon-remove"></span> Refutes</h4>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row topmargin">
+
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4" >
+
+            <div class="callout left">
+                <h4>Remaining Sentences</h4>
+            </div>
+
+
+
+        </div>
+
+        <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+
+            <div ng-repeat="(entity,sentences) in sent_selections track by $index" ng-init="ent_idx = $index">
+                <h4>{{entity}}</h4>
+
+                <div class="ebox" ng-repeat="(id,selected) in sentences">
+                    {{wikis[entity][3][id].split("\t")[1]}} <br />
+<!--
+                    <button class="btn btn-success btn-xs" ng-click="supports(entity,id)"><span class="glyphicon glyphicon-ok"></span>Supports</button>
+                    <button class="btn btn-danger btn-xs" ng-click="refutes(entity,id)"><span class="glyphicon glyphicon-remove"></span>Refutes</button><br />
+
+
+                    <button class="btn btn-default btn-xs" ng-click="supports(entity,id)"><span class="glyphicon glyphicon-ok"></span>Wholly By Itself</button>
+                    <button class="btn btn-default btn-xs" ng-click="refutes(entity,id)"><span class="glyphicon glyphicon-remove"></span>In Conjunction with Other Sentences</button>
+-->
+                    <!--Supports <input type="radio" ng-value="1" ng-attr-name="verdict_{{entity}}_{{id}}" /> Refutes <input ng-value="2" type="radio" ng-attr-name="verdict_{{entity}}_{{id}}" /> Neutral (information only) <input ng-value="3" type="radio" ng-attr-name="verdict_{{entity}}_{{id}}" />  <input type="checkbox" />-->
+                </div>
+            </div>
+
+            <!--
+            <div ng-show="activeVerdict==null" ng-repeat="(entity,sentences) in sent_selections track by $index" ng-init="ent_idx = $index">
+                <h4>{{entity}}</h4>
+
+                <div class="ebox" ng-repeat="(id,selected) in sentences">
+                    {{wikis[entity][3][id].split("\t")[1]}}
+                    <!--Supports <input type="radio" ng-value="1" ng-attr-name="verdict_{{entity}}_{{id}}" /> Refutes <input ng-value="2" type="radio" ng-attr-name="verdict_{{entity}}_{{id}}" /> Neutral (information only) <input ng-value="3" type="radio" ng-attr-name="verdict_{{entity}}_{{id}}" />  <input type="checkbox" />
+                </div>
+            </div>
+-->
+        </div>
+
+
+
+
+    </div>
+
+</div>
+

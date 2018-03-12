@@ -1,0 +1,318 @@
+
+
+<div ng-class="{sandbox:testingMode}" style="position:absolute; left:0; right:0; top:50px; height:200px; background:white; padding-top:0 !important; padding-bottom:10px !important; border-bottom:1px solid #555;">
+
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <h1>Claim Labelling Task (WF2)</h1>
+        </div>
+    <div>
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+            <div class="callout left">
+                <h4>Claim</h4>
+            </div>
+        </div>
+
+        <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+            <div class="ebox">
+                <h4>{{claim.text}}</h4>
+            </div>
+        </div>
+
+
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+            <div style="margin-top:20px;">
+                <div style="float:right">
+                    <button class="btn btn-warning" ng-disabled="support_sents.length==0&&refute_sents.length==0" ng-click="onSubmit(-1)"><span class="glyphicon glyphicon-flag"></span> Submit and flag</button>
+                    <button class="btn btn-default" ng-click="showModal2=true">Skip (opens menu)</button>
+                    <button class="btn btn-default" confirmed-click="goHome();" ng-confirm-click="Return to main menu. Any unsubmitted annotations will be lost.">Home</button>
+                    <button class="btn btn-default" ng-click="showModal3=true">Guidelines</button>
+                </div>
+
+                <button style="float:left" class="btn btn-primary" ng-disabled="support_sents.length==0&&refute_sents.length==0" ng-click="onSubmit(1)">Submit</button>
+
+                <div style="display: inline-block; margin-top:-10px; padding-left: 30px;" ng-show="testingMode">
+                 <h4 style="color:red; margin-bottom:0;">Sandbox Environment</h4>
+                 <div style="color:red;">Sentences you select will be recorded. But will not form part of the final dataset.</div>
+                </div>
+
+
+                <div style="display: inline-block; margin-top:-10px; padding-left: 30px;" ng-show="oracleMode">
+                 <h4 style="color:blue; margin-bottom:0;">Oracle Environment</h4>
+                 <div style="color:blue;">Sentences you select will be used to measure the coverage of the dataset.</div>
+                </div>
+           </div>
+
+        </div>
+    </div>
+
+
+</div>
+
+
+<div   ng-class="{sandbox:testingMode}" style="bottom:0; top:250px; position:absolute;">
+
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6" style="height:100%; overflow-y:scroll;">
+
+            <h3>Wikipedia article for {{entity}}</h3>
+
+            <div class="" ng-repeat="line in lines track by $index" ng-init="words = line.split('\t')[1]; sent_idx = $index" ng-class="{'highlight':active==$index, 'hsupports':support_sents.indexOf($index)!=-1,'hrefuted':refute_sents.indexOf($index)!=-1 , 'ebox': words.length>1,'pskip': words.length<=1 }">
+                <div style="display:table-cell; width:100%">
+                    <span ng-repeat="block in line_links[$index]">
+                        <span ng-show="block['link']!=null">
+                            <a href="javascript:void(0)" ng-click="getInfo(sent_idx, block['link'])" ng-hide="loading">{{block['text']}}</a>
+
+                            <span ng-show="loading">{{block['text']}}</span>
+                        </span>
+
+                        <span ng-hide="block['link']!=null">
+                            {{block['text']}}
+                        </span>
+
+                    </span>
+                </div>
+                <div style="display:table-cell;padding-left:10px; line-height:100%" ng-show="words.length>1 && active!=$index" >
+                    <button class="btn btn-default btn-xs" ng-show="support_sents.indexOf($index)==-1&&refute_sents.indexOf($index)==-1" ng-disabled="loading" ng-click="getInfo($index)">Expand</button>
+                    <button class="btn btn-default btn-xs" ng-show="support_sents.indexOf($index)!=-1||refute_sents.indexOf($index)!=-1" ng-disabled="loading" ng-click="getInfo($index)">Edit</button>
+                </div>
+
+                <div style="display:table-cell;padding-left:10px; line-height:100%; width:150px;" ng-show="words.length>1 && active==$index" >
+                    <button class="btn btn-success btn-xs" ng-disabled="loading" ng-click="supports($index)"><span class="glyphicon glyphicon-ok"></span>Supports</button>
+                    <button class="btn btn-danger btn-xs" ng-disabled="loading" ng-click="refutes($index)"><span class="glyphicon glyphicon-remove"></span>Refutes</button>
+
+                    <button class="btn btn-xs" ng-disabled="loading" ng-click="cancel($index)">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6"  style="height:100%; overflow-y:scroll;">
+            <h3>Dictionary</h3>
+
+            <div class="row ebox" ng-show="active>=0">
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <p>Add a custom page from Wikipedia if essential information is missing from the dictionary. E.g. the claim mentions an entity that does not appear in the Wikipedia page for {{entity}}</p>
+
+                    <button class="btn btn-xs btn-primary" style="vertical-align: bottom" ng-disabled="loading" ng-click="showModal1 = true">Add Custom Page</button>
+                </div>
+
+
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6" >
+                    <p>If you need to combine multiple sentences from the original page ({{entity}}), this will add it to the dictionary so that it can form part of the supporting evidence. </p>
+
+                    <button class="btn btn-xs btn-primary" style="vertical-align: bottom"  ng-disabled="loading" ng-click="addOriginal()">Add Main Wikipedia Page<br/>({{entity}})</button>
+                </div>
+
+            </div>
+
+            <h4>Quick Links</h4>
+            <div ng-repeat="(entity,entry) in dictionary track by $index">
+                <a ng-click="goto(entity)" href="javascript:void(0)">{{entity}}</a>
+            </div>
+
+            <div ng-repeat="(entity,entry) in dictionary track by $index" style="margin-bottom:100px;">
+                <h4 ng-attr-id="dict_{{entity}}">{{entity}}</h4>
+
+                <div ng-repeat="line in entry.split('\n') track by $index" ng-init="words = line.split(' ');" ng-class="{'ebox': words.length>1,'pskip2': words.length<=1 }">
+                    <label style="display:inline-block; font-weight:normal;" ng-attr-for="dict_{{entity}}_{{$index}}">
+                        <input ng-disabled="entity==$parent.rootEntity && $index == active" ng-model="selections[active][entity][$index]" ng-value="1" ng-show="words.length>1" type="checkbox" style="width:20px;" ng-attr-id="dict_{{entity}}_{{$index}}" /> {{line}}</label>
+                </div>
+
+            </div>
+
+            <div ng-show="active==-1">
+                Select a sentence to show the dictionary.
+            </div>
+            <div  ng-show="active>-1 && emptyDict">
+                This sentence has no dictionary items.
+            </div>
+            <div ng-show="loading">
+                Loading...
+            </div>
+        </div>
+</div>
+
+<modal visible="showModal1" on-sown="modalOneShown()" on-hide="modalOneHide()">
+<modal-header title="Add Another Page"></modal-header>
+<modal-body>
+    <h3>Add a Wikipedia Page to Dictionary</h3>
+    <p>Search for a relevant page from Wikipedia (using <a href="http://google.com" target="_blank">Google</a> or <a href="https://en.wikipedia.org" target="_blank">Wikipedia</a>) and paste the URL in the box below</p>
+    <input ng-model="customAddUrl" placeholder="e.g. https://en.wikipedia.org/wiki/Keanu_Reeves or Reality_television" name="addcustom" style="width:100%;margin-bottom:10px;display:block" /><button ng-click="addCustom(customAddUrl)" class="btn">Add</button>
+
+</modal-body>
+</modal>
+
+
+<modal visible="showModal2">
+<modal-header title="Select reason for skipping"></modal-header>
+<modal-body>
+        <p>
+            <button class="btn" ng-click="showModal2=false; onSkip(2)">Not Enough Information</button><br />
+            Select if the document (or dictionary items) contains no information that can be used to support or refute this claim. <br />This claim will not be reassigned.
+        </p>
+        <hr />
+        <p>
+            <button class="btn" ng-click="showModal2=false; onSkip(0)">I don't want to annotate this example</button><br />
+            This will reassign this claim to another DA to annotate.
+        </p>
+        <hr />
+        <p>
+            <button class="btn btn-warning" ng-click="showModal2=false;onSkip(3)"><span class="glyphicon glyphicon-flag"></span> The claim is ambiguous, nonsense or is not possible to check</button><br />
+            The claim will be checked to see if it meets the WF1 guidelines.
+        </p>
+        <hr />
+        <p>
+            <button class="btn btn-warning" ng-click="showModal2=false;onSkip(4)"><span class="glyphicon glyphicon-flag"></span> The claim has a typo or simple error</button><br />
+            The claim will be checked and corrected.
+        </p>
+
+
+</modal-body>
+</modal>
+
+
+<modal visible="showModal3">
+<modal-header title="Guidelines"></modal-header>
+<modal-body>
+
+    <p>The purpose of this task is to identify evidence from a Wikipedia page that can be used to support or refute simple factoid sentences called claims. The claims are generated by humans (as part of the WF1 annotation workflow) from the Wikipedia page about {{entity}}. Some claims are true. Some claims are fake. You must find the evidence from the page that supports or refutes the claim.</p>
+
+    <p>Other Wikipedia pages will also provide additional information that can serves as evidence. For each line, we will provide extracts from the linked pages in the dictionary column which appear when you "Expand" the sentence. The sentences from these linked pages that contain relevant supplimentary information should be individually selected to record which information is used in justifying your decisions.</p>
+
+
+
+    <h4 class="topmargin">Step-by-step guide:</h4>
+
+    <ol class="gul">
+        <li>Read and understand the claim</li>
+        <li>Read the Wikipedia page and identify sentences that contain relevant information.</li>
+        <li>On identifying a relevant sentence, press the <strong>Expand</strong> button to highlight it. This will load the dictionary and the buttons to annotate it:
+            <ul>
+                <li>If the highlighted sentence contains enough information in a definitive statement to support or refute the claim, press the Supports or Refutes button to add your annotation. No information from the dictionary is needed in this case (this includes information from the main Wikipedia page). Then continue annotating from step 2.</li>
+                <li>If the highlighted sentence contains some information supporting or refuting the claim but also needs supporting information, this can be added from the dictionary.
+                    <ol>
+                        <li>The hyperlinked sentences from the passage are automatically added to the dictionary</li>
+                        <li>If a sentence from the main Wikipedia article is needed to provide supporting information. Click “Add Main Wikipedia Page” to add it to the dictionary.<br/>
+                            <strong>NB:</strong> if multiple sentences from the main Wikipedia page are selected, you don’t have to repeat the annotation for all the sentences as this will result in duplicates. Attempting to do so will result will result in this warning (that can be dismissed if new information will be added):<br />
+                            <code>This sentence has already been selected as part of another annotation that uses the original page. Unless you intend to add new information, continuing will result in a duplicate annotation.</code></li>
+                        <li>If the claim or sentence contains an entity that is not in the dictionary, then a custom page can be added by clicking “Add Custom Page”. Use a search engine of your choice to find the page and then paste the Wikipedia URL into the box.</li>
+
+                        <li>Tick the sentences from the dictionary <strong>that provide the minimal amount of supporting information needed to form your decision</strong>. If there are multiple equally relevant entries (such as a list of movies), then just select the first.</li>
+                    </ol>
+                </li>
+                <li>Once all required information is added, then press the Supports or Refutes button to add your annotation and continue from step 2.</li>
+
+                <li>If the highlighted sentence and the dictionary do not contain enough information to support or refute the claim, press the Cancel button and continue from step 2 to identify more relevant sentences.</li>
+
+            </ul>
+        </li>
+        <li>On reaching the end of the Wikipedia page. Press <strong>Submit</strong> if you could find information that supports or refutes the claim. If you could not find any supporting evidence, press <strong>Skip</strong> then select <strong>Not enough information</strong></li>
+    </ol>
+
+    <h4 class="topmargin">What does it mean to Support or Refute</h4>
+    <p>The objective is to find sentences that support or refute the claim.</p>
+    <p>You must apply <strong>common-sense</strong> reasoning to the evidence you read but <em>avoid applying your own world-knowledge</em> by basing your decisions on the information presented in the Wikipedia page and dictionary.</p>
+
+    <p>As a guide - you should ask yourself:</p>
+
+    <div class="ebox"><em>If I was given only the selected sentences, do I have stronger reason to believe claim is true (supported) or stronger reason to believe the claim is false (refuted). If I'm not certain, what additional information (dictionary) do I have to add to reach this conclusion.</em></div>
+
+
+    <p>The following count as valid justifications for marking an item as supported/refuted:</p>
+    <ul>
+        <li>Sentence directly states information that supports/refutes the claim or states information that is synonymous/antonymous with information in the claim<br />
+            <div class="ebox">
+                <strong>Claim:</strong> Water occurs artificially<br/>
+                <strong>Refuted by:</strong> ``It also occurs in nature as snow, glaciers ...''
+            </div>
+            <div class="ebox">
+                <strong>Claim:</strong> Samuel L. Jackson was in the third movie in the Die Hard film series.<br/>
+                <strong>Supported by:</strong> ``He is a highly prolific actor, having appeared in over 100 films, including Die Hard 3.''
+            </div>
+        </li>
+
+        <li>Sentence refutes the claim through negation or quantification<br />
+            <div class="ebox">
+                <strong>Claim:</strong> Schindler's List received no awards.<br/>
+                <strong>Refuted by:</strong> ``It was the recipient of seven Academy Awards (out of twelve nominations), including Best Picture, Best Director...''
+            </div>
+        </li>
+
+        <li>Sentence provides information about a different entity and only one entity is permitted (e.g. place of birth can only be one place)
+            <div class="ebox">
+                <strong>Claim:</strong> David Schwimmer finished acting in Friends in 2005.<br/>
+                <strong>Refuted by:</strong> ``After the series finale of Friends in 2004, Schwimmer was cast as the title character in the 2005 drama Duane Hopwood.''
+            </div>
+        </li>
+
+        <li>Sentence provides information that, in conjunction with other sentences from the dictionary, fulfils one of the above criteria
+            <div class="ebox">
+                <strong>Claim:</strong> John McCain is a conservative.<br/>
+                <strong>Refuted by:</strong> ``He was the Republican nominee for the 2008 U.S. presidential election.'' <strong>AND</strong> ``The Republican Party's current ideology is American conservatism, which contrasts with the Democrats' more progressive platform (also called modern liberalism).''
+            </div>
+        </li>
+    </ul>
+
+    <h4 class="topmargin">Adding Custom Pages</h4>
+    <p>You may need to add a custom page from Wikipedia to the dictionary. This may happen in cases where the claim discusses an entity that was not in the original Wikipedia page</p>
+    <div class="ebox">
+        <strong>Claim:</strong> Colin Firth is a Gemini.<br/>
+        <strong>In Original Page:</strong> ``Colin Firth (born 10 September 1960)...  ''<br />
+        <strong>Requires Additional Information from Gemini:</strong> ``Under the tropical zodiac, the sun transits this sign between May 21 and June 21.''
+    </div>
+
+
+
+    <h4 class="topmargin">Tense</h4>
+    <p>The difference in verb tenses that do not affect the meaning should be ignored.</p>
+
+    <div class="ebox">
+        <strong>Claim: </strong> Frank Sinatra is a musician<br/>
+        <strong>Supported: </strong> He is one of the best-selling music artists of all time, having sold more than 150 million records worldwide.
+    </div>
+
+    <div class="ebox">
+        <strong>Claim: </strong> Frank Sinatra is a musician <br/>
+        <strong>Supported: </strong> Francis Albert Sinatra (/sɪˈnɑːtrə/; Italian: [siˈnaːtra]; December 12, 1915 – May 14, 1998) was an American singer
+    </div>
+
+
+    <h4 class="topmargin">Skipping</h4>
+    <p>There may be times where it is appropriate to skip the claim:</p>
+
+    <ul>
+        <li>The claim cannot be verified using the information with the information provided:
+            <ul>
+                <li>If the claim could potentially be verified using other publicly available information. Select <strong>Not Enough Information</strong></li>
+                <li>If the claim can't be verified using any publicly available information (because it's ambiguous, vague, personal or implausible) select <strong>The claim is ambiguous or contains personal information</strong>
+                    <br/> <strong>NB:</strong>Note that claim can be ambiguous even if the exact sentence can be found in Wikipedia (e.g. "The album achieved widespread popularity in America").
+                </li>
+            </ul>
+        </li>
+        <li>The claim contains typographical errors, spelling mistakes, is ungrammatical or could be fixed with a very minor change<br/>
+            Select <strong>The claim has a typo or grammatical error</strong>
+        </li>
+    </ul>
+
+    <h4 class="topmargin">Flagging</h4>
+    <p>You can submit the claim but flag it for further discussion. This could be because:</p>
+    <ul>
+        <li>The claim might contain potentially brand-damaging information (but remember that mutated claims are never going to be presented to customers as facts)</li>
+        <li>The claim fall between two slightly conflicting guidelines</li>
+    </ul>
+</modal-body>
+</modal>
+
+<modal visible="showModalEnd">
+    <modal-header title="No more annotation tasks!"></modal-header>
+    <modal-body style="background-color: black">
+        <h3 style="text-align: center; color: white">Congratulations on completing <strong>FEVER</strong>!</h3>
+        <p style="text-align: center; color: white">
+            <br/>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/93/Fuochi_d%27artificio.gif"/>
+        </p>
+        <p style="text-align: center">
+            <button class="btn btn-default" ng-click="goHome();">Return Home</button>
+        </p>
+    </modal-body>
+</modal>

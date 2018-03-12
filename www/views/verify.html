@@ -1,0 +1,139 @@
+
+<div class="container">
+    <h1>Claim Verification Task (WF2)</h1>
+    
+    
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="callout">
+                <h4>Guidelines</h4>
+                <p>Given a claim and a piece evidence, you must label whether the information in the evidence supports or refutes the claim or whether more information is needed. For each response, a justification is required. </p>
+
+                <p>The justification made first by selecting the words in the evidence that are used to make your decision and then by summarizing your decision in a sentence or two.</p>
+
+
+                
+                <ul>
+                    <li>You must only use the information provided in the evidence box and the supporting information in the dictionary.</li>
+                    <li>You may not use your own personal knowledge/beliefs or outside information</li>
+                    <li>You must assign one of the following verdicts:</li>
+                        <ul>
+                            <li>Supports</li>
+                            <li>Refutes</li>
+                            <li>Insufficient Information</li>
+                        </ul>
+                    <li>Highlight/select the words in the evidence that are used to inform your decision including the text in the dictionary entry</li>
+                    <li>Using the highlighted text, generate a short summary of the evidence you used as the rationale behind your decision. This may simply involve copying part of the evidence, or rephrasing it.</li>
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+        
+        
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>Claim</h4>
+            </div>
+        </div>
+            
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="ebox">
+                <h4><strong>Keanu Reeves plays alternative rock music</strong></h4>
+            </div>
+        </div>
+    </div>
+        
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>Evidence</h4>
+                <p>This is the sentence that is used to substantiate your claims about {{entity}}</p>
+            </div>
+        </div>
+            
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <article class="sentence">From 1991, Reeves played bass guitar in the grunge band Dogstar. During the early 1990s, Reeves started to break out of his teen-film period. He appeared in high-budget action films like Point Break, for which he won MTV's "Most Desirable Male" award in 1992. He was involved in various lower-budget independent films, including the well-received 1991 film, My Own Private Idaho with River Phoenix. In 1992, he played Jonathan Harker in the Francis Ford Coppola-directed blockbuster Bram Stoker's Dracula.</article>
+    
+        </div>
+        
+    </div>
+    
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>Dictionary</h4>
+                <p>Click the word for a definiton. These definitons can be used to support the claims you write</p>
+            </div>
+        </div>
+            
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">  
+            <div class="ebox">
+                <div class="dictionary_item"><h4><a href="javascript:void(0)">Dogstar</a></h4> <div>Dogstar was an alternative rock group active from the mid-1990s to the early 2000s. The band performed at the 1996 Zwemdokrock Festival (Lummen, Belgium) and at the 1999 Glastonbury Festival (United Kingdom), and it released an EP and two albums. </div>
+                </div>
+                
+                <div class="dictionary_item"><h4><a href="javascript:void(0)">Grunge</a></h4> <div>Grunge (sometimes referred to as the Seattle sound) is a subgenre of alternative rock and a subculture that emerged during the mid-1980s in the Pacific Northwest U.S. state of Washington, particularly in Seattle and nearby towns.</div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>Verdict</h4>
+                
+                <a href="javascript:void(0)" ng-click="show_example = ! show_example">Example</a> 
+                <div ng-show="show_example">
+                    <blockquote>The Amazon River, usually abbreviated to Amazon (US: /ˈæməzɒn/ or UK: /ˈæməzən/; Spanish and Portuguese: Amazonas), in South America is the largest river by discharge volume of water in the world and according to some authors, the longest in length.</blockquote>
+                    <p><strong>Good</strong></p>
+                    <ul>
+                        <li>The Amazon River is located in South America.</li>
+                        <li>The River Amazon is a river in the southern hemisphere</li>
+                        <li>Amazonas is another name for the Amazon River</li>
+                        <li>The Amazon is the longest river in the world.</li>
+                        <li>The River Trent is shorter than the Amazon.</li>
+                    </ul>
+                    <p><strong>Bad</strong></p>
+                    <ul>
+                        <li>The Amazon is might be the longest river <em>('might be' is cautious/vague langauge)</em></li>
+                        <li>The Amazon River is home to river dolphins <em>(not explictly mentioned in text).</em></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+            
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">  
+            <p>Does the evidence support or refute the claim?</p>
+            <form>
+                <ul>
+                    <li><input type="radio" name="verdict" id="verdict-supports"> <label for="verdict-supports">Supports</label></li>
+                    <li><input type="radio" name="verdict" id="verdict-refutes"> <label for="verdict-refutes">Refutes</label></li>
+                    <li><input type="radio" name="verdict" id="verdict-insufficient"> <label for="verdict-supports">Insufficent Information</label></li>
+                </ul>
+            </form>
+            
+        </div>
+    </div>
+    
+    <div class="row">
+        
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+        </div>
+        
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+    
+            <form class="navigation_actions" ng-submit="submit()">
+                <input type="submit" name="submit" value="Submit Claims" class="btn btn-primary"/>
+            </form>
+        </div>
+        
+        
+
+
+        
+    </div>
+    
+</div>

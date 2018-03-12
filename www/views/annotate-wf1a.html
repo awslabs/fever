@@ -1,0 +1,167 @@
+<div ng-class="{sandbox:testingMode}">
+<div class="container">
+    <h1>Claim Generation Task (WF1a)</h1>
+
+    <div ng-show="testingMode">
+        <h4 style="color:red; margin-bottom:0;">Sandbox Environment</h4>
+        <div style="color:red;">Claims you write will be recorded. But will not form part of the final dataset.</div>
+    </div>
+    
+    <div class="row topmargin">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="callout">
+                <h4>Guidelines</h4>
+                <p>The objective of this task is to <strong>generate true claims</strong> from this source sentence that was extracted from Wikipedia. </p>
+
+                <ul>
+                    <li><strong>Extract simple factoid claims about {{entity}}</strong> given the source sentence</li>
+                    <li>Use the <strong>source sentence and dictionary</strong> as the basis for your claims.</li>
+                    <li><strong>Reference any entity directly</strong> (pronouns and nominals should not be used).</li>
+                    <li>Minor variations of names are acceptable (e.g. John F Kennedy, JFK, President Kennedy). </li>
+                    <li><strong>Avoid vague or cautions language</strong> (e.g. might be, may be, could be, is reported that)</li>
+                    <li>Correct capitalisation of entity names should be followed (India rather than india).</li>
+                    <li>Sentences should end with a period.</li>
+                    <li>Numbers can be formatted in any appropriate English format (including as words for smaller quantities).</li>
+                    <li>Some of the extracted text might not be accurate. These are still valid candidates for summary. It is not your job to fact check the information</li>
+
+                </ul>
+
+                <h4>World Knowledge</h4>
+
+                <ul>
+                    <li><strong>Do not</strong> incorporate your own knowledge or beliefs.</li>
+                    <li>Additional Knowledge is given to you in the dictionary. This dictionary contains additional information that may be helpful in making more complex claims. <br/>(we prefer you to use the dictionary because this information can be backed up from Wikipedia)</li>
+                    <li>If the source sentence is not suitable, leave the box blank to skip.</li>
+                    <li>If a dictionary entry is not suitable or uninformative, ignore it.</li>
+                </ul>
+
+            </div>
+        </div>
+        
+    </div>
+        
+        
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>Generating Claims About</h4>
+            </div>
+        </div>
+            
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="ebox">
+                <h4><strong>{{entity}}</strong></h4>
+            </div>
+        </div>
+    </div>
+        
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>Source Sentence</h4>
+                <p>This is the sentence that is used to substantiate your claims about {{entity}}</p>
+            </div>
+        </div>
+            
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <article class="sentence">{{sentence}}</article>
+            <article class="context" ng-show="showcontext">{{context_before}} <strong>{{sentence}}</strong> {{context_after}}</article>
+            <a href="javascript:void(0)" ng-hide="showcontext" ng-click="showcontext = !showcontext">Show Context</a>
+            <a href="javascript:void(0)" ng-show="showcontext" ng-click="showcontext = !showcontext">Hide Context</a>
+        
+        </div>
+        
+    </div>
+    
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>Dictionary</h4>
+                <p>Click the word for a definition. These definitions can be used to support the claims you write or make the claims more complex by making a deduction using the dictionary definitions</p>
+                <p>The dictionary comes from the blue links on Wikipedia. This may be empty if the passage from Wikipedia contains no links.</p>
+            </div>
+        </div>
+            
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">  
+            <div class="ebox">
+                <div class="dictionary_item" ng-repeat="(key, value) in dictionary"><h4><a href="javascript:void(0)" ng-click="show_dictionary_item = ! show_dictionary_item">{{key}}</a></h4> <div ng-show="show_dictionary_item">{{value}}</div></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>True Claims (one per line)</h4>
+                <p>Aim to spend about 2 minutes generating <strong>2-5</strong> claims from this source sentence</p>
+                <p>If the source sentence is uninformative, press the skip button</p>
+
+                <a href="javascript:void(0)" ng-click="show_example = ! show_example">Example</a> 
+                <div ng-show="show_example">
+                    <blockquote>The Amazon River, usually abbreviated to Amazon (US: /ˈæməzɒn/ or UK: /ˈæməzən/; Spanish and Portuguese: Amazonas), in South America is the largest river by discharge volume of water in the world and according to some authors, the longest in length.</blockquote>
+                    <p><strong>Good</strong></p>
+                    <ul>
+                        <li>The Amazon River is located in South America.</li>
+                        <li>The River Amazon is a river in the southern hemisphere.</li>
+                        <li>Amazonas is another name for the Amazon River.</li>
+                        <li>The Amazon is the longest river in the world.</li>
+                        <li>The River Trent is shorter than the Amazon.</li>
+                    </ul>
+                    <p><strong>Bad</strong></p>
+                    <ul>
+                        <li>The Amazon is might be the longest river. <em>('might be' is cautious/vague language)</em></li>
+                        <li>The Amazon River is home to river dolphins. <em>(not explicitly mentioned in text).</em></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+            
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">  
+            <textarea ng-model="true_claims"></textarea>
+        </div>
+    </div>
+    
+    <div class="row">
+        
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+        </div>
+        
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+
+            <form style="display:inline" class="navigation_actions" ng-submit="submit()">
+                <input type="submit" name="submit" value="Submit Claims" ng-disabled="working||done" class="btn btn-primary"/>
+
+            </form>
+            <form style="display:inline" class="navigation_actions" ng-submit="skip()">
+                <input type="submit" name="submit" value="Skip" class="btn"/>
+            </form>
+            <form style="display:inline" class="navigation_actions" ng-submit="home()">
+                <input type="submit" name="submit" value="Home" class="btn"/>
+            </form>
+
+            <div ng-show="working">Loading</div>
+            <div ng-show="done">Done. Loading next workflow item</div>
+
+        </div>
+
+
+        
+
+
+        
+    </div>
+
+        <div class="navigation_actions">
+        &nbsp;
+    </div>
+
+
+    <!--<div style="position:fixed; top:0px; right:30px; border: 1px solid #333; background:white">
+        Time on this page: <time>{{timer}}</time><br/>
+        Number of claims: {{count}} this session.
+    </div>-->
+    
+</div>
+    <div class="container">
+    <h4 ng-show="testingMode" style="color:red">Sandbox Environment</h4></div>
+    </div>

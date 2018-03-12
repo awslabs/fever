@@ -1,0 +1,204 @@
+
+<div class="container">
+    <h1>Claim Generation Task</h1>
+    
+    <h3 class="ebox">You are generating claims for: <strong>{{entity}}</strong></h3>
+    
+    <div class="row">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <h4>Sentence</h4>
+            <article class="sentence">{{sentence}}</article>
+            <article class="context" ng-show="showcontext">{{context_before}} <strong>{{sentence}}</strong> {{context_after}}</article>
+            <a href="javascript:void(0)" ng-hide="showcontext" ng-click="toggleContext()">Show Context</a>
+            <a href="javascript:void(0)" ng-show="showcontext" ng-click="toggleContext()">Hide Context</a>
+            
+            <h4>Dictionary</h4>
+            
+            <div class="dictionary_item" ng-repeat="(key, value) in dictionary"><a href="javascript:void(0)" ng-click="show_dictionary_item = ! show_dictionary_item">{{key}}</a> <div ng-show="show_dictionary_item">{{value}}</div></div>
+            
+            <h4>True Claims</h4>
+            <textarea ng-model="true_claims"></textarea>
+        
+           
+            <form class="navigation_actions" ng-submit="submit()">
+                <input type="submit" name="submit" value="Submit Claims" class="btn btn-primary"/>
+            </form>
+        </div>
+        
+         <h4>Modified Claims</h4>
+            <div>
+                Misinformation type: {{misinformation_types[misinformation_type]}}
+            </div>
+            <textarea ng-model="false_claims"></textarea>
+        
+        
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            
+            <h4>Guidelines</h4>
+            
+            <p>The objective of this task is to generate both true and misleading/corrupt claims from information extracted from Wikipedia. </p>
+
+            <ul>
+                <li>Use the sentence as the basis for your claims</li>
+                <li>All facts should reference any entity directly (i.e. pronouns and nominals should not be used).</li>
+            </ul>
+
+            
+            <h5>For the true claims</h5>
+            <ul>
+                <li>Do not apply your own beliefs or world knowledge</li>
+                <li>Any complex words in the sentence will also be given a dictionary definition which can be incorporated into your claims</li>
+                <li>Some of the extracted text might not be accurate. These are still valid candidates for summary. It is not your job to fact check the information</li>
+            </ul>
+            
+        
+            
+            <div class="specific_guidelines">
+                <h5>Specific Guidelines for Misinformation:</h5>
+                
+                <div ng-show="misinformation_type=='sim'">
+                    <p>For each of the true claims, if possible, substitute the object and/or the verb in the sentence for an alternative of the same type. In our example, The Matrix is a movie, and is substituted for another movie or starred is replaced with acted.</p>
+                    
+                    
+                    <h5>Example:</h5>
+                    <p>For the claim: Keanu Reeves starred in <strong>The Matrix</strong></p>
+                    
+                    <p>Suitable substitutions: </p>
+                    <ul>
+                        <li>Keanu Reeves also acted in Top Gun</li>
+                        <li>Keanu Reeves starred in the movie, The Bourne Identity</li>
+                    </ul>
+                    
+                    
+                    <p>Unsuitable substitutions:</p>
+                    <ul>
+                        <li>Keanu Reeves starred on the Hollywood Walk of Fame <br/>
+                            <em>(The Matrix is a movie whereas the Walk of Fame is a place)</em></li>
+                        <li>Keanu Reeves stars in science-fiction movies<br/><em>(less specific than The Matrix)</em></li>
+                    </ul>
+                </div>
+                
+                
+                <div ng-show="misinformation_type=='dis'">
+                    <p>For each of the true claims, if possible, substitute the object and/or the verb in the sentence a plausible alternative from a different class of things. In our example, guitar is a musical instrument, and is substituted for something that is not a musical instrument and plays is replaced for repaired.</p>
+                
+                    
+                    <h5>Example:</h5>
+                    <p>For the claim: David Grohl plays <strong>the guitar</strong></p>
+                    
+                    <p>Suitable substitutions: </p>
+                    <ul>
+                        <li>David Grohl plays tennis</li>
+                        <li>David Grohl plays chess</li>
+                        <li>David Grohl repaired his guitar</li>
+                    </ul>
+                    
+                    
+                    <p>Unsuitable substitutions:</p>
+                    <ul>
+                        <li>David Grohl plays the piano<br/>
+                            <em>(piano is also a musical instrument)</em></li>
+                        <li>David Grohl plays turnips<br/>
+                            <em>(not plausible)</em></li>
+                    </ul>
+                </div>
+                
+                
+                <div ng-show="misinformation_type=='spec'">
+                    <p>For each of the true claims, if possible, substitute the object and/or the verb in the sentence for a more specific alternative. In our example, rock music is general and can be made more specific by chosing something that implies rock music.</p>
+                
+                    
+                    <h5>Example:</h5>
+                    <p>For the claim: David Grohl plays <strong>rock music</strong></p>
+                    
+                    <p>Suitable substitutions: </p>
+                    <ul>
+                        <li>David Grohl performed live at a rock festival.</li>
+                        <li>David Grohl plays in a punk-rock band</li>
+                        <li>David Grohl plays for the Foo Fighters</li>
+                    </ul>
+                    
+                    
+                    <p>Unsuitable substitutions:</p>
+                    <ul>
+                        <li>David Grohl plays poker<br/>
+                            <em>(poker is not a type of music)</em></li>
+                        <li>David Grohl plays music<br/>
+                            <em>(this doesn't imply rock music)</em></li>
+                        <li>David Grohl plays jazz<br/>
+                            <em>(this doesn't imply rock music)</em></li>
+                        <li>David Grohl plays guitar<br/>(this doesn't imply rock music as guitar can be used for other genres too)
+                        </li>
+                    </ul>
+                
+                </div>
+                <div ng-show="misinformation_type=='gen'">
+                    <p>For each of the true claims, if possible, substitute the object and/or the verb in the sentence for a more general alternative. In our example, Foo Fighters is something specific and can be made more general by chosing something that is implied by Foo Fighters.</p>
+                
+                    
+                    <h5>Example:</h5>
+                    <p>For the claim: David Grohl plays guitar for <strong>Foo Fighters</strong></p>
+                    
+                    <p>Suitable substitutions: </p>
+                    <ul>
+                        <li>David Grohl plays in a rock band</li>
+                        <li>David Grohl plays a musical instrument</li>
+                        <li>David Grohl is in the band Foo Fighters</li>
+                        <li>David Grohl plays music</li>
+                    </ul>
+                    
+                    
+                    <p>Unsuitable substitutions:</p>
+                    <ul>
+                        <li>David Grohl plays poker<br/>
+                            <em>(poker is not a type of music)</em></li>
+                        <li>David Grohl plays jazz<br/>
+                            <em>(this isn't implied by Foo Fighters)</em></li>
+                        <li>David Grohl plays guitar<br/>(this isn't implied by playing in Foo Fighters as he could play another instrument)
+                        </li>
+                    </ul>
+                
+                </div>
+                
+               
+                <div ng-show="misinformation_type=='neg'">
+                    <p>For each of the true claims, if possible, substitute the object and/or the verb in the sentence to negate the meaning. In our example, Foo Fighters is something specific and can be made more general by chosing something that is implied by Foo Fighters.</p>
+                
+                    
+                    <h5>Example:</h5>
+                    <p>For the claim: David Grohl plays guitar for <strong>Foo Fighters</strong></p>
+                    
+                    <p>Suitable substitutions: </p>
+                    <ul>
+                        <li>David Grohl only plays jazz music</li>
+                        <li>David Grohl can't play guitar</li>
+                        <li>David Grohl isn't in the band Foo Fighters</li>
+                        <li>David Grohl is not a musician</li>
+                        <li>David Grohl doesn't play guitar for Foo Fighters</li>
+                    </ul>
+                    
+                    
+                    <p>Unsuitable substitutions:</p>
+                    <ul>
+                        <li>David Grohl plays bass for Foo Fighters<br/>
+                            <em>(this doesn't necessarily preclude him from also playing guitar)</em></li>
+                    
+                    </ul>
+                
+                </div>
+                
+               
+                
+
+
+            </div>
+            
+
+        
+        
+        </div>
+
+        
+    </div>
+    
+</div>

@@ -1,0 +1,202 @@
+<div class="container-fluid">
+    <h1>Claim Labelling Task (WF2)</h1>
+    
+    
+    <div class="row">
+
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="callout">
+                <h4>Guidelines</h4>
+
+                <p>The objective of this task is to label whether claims can be supported or refuted given sentences from Wikipedia.</p>
+
+                <ul>
+                    <li>You are given 1 claim and part of the Wikipedia article it came from.</li>
+                    <li>You should find evidence that supports or refutes this claim. </li>
+                    <li>Evidience must be grouped together in "verdicts". Each verdict must form a chain of reasoning that provides all the information needed to verify the claim.</li>
+                    <li><strong>You can add additional articles that provide more source information to verify this claim.</strong>  Use your best judgement here to add relevant information.</li>
+                    <li>We have extracted the individual sentences (in gray boxes) and grouped them by paragraph.</li>
+                </ul>
+
+                <h4>What counts as evidence?</h4>
+                <p>Justifications must be made using information within the Wikipedia pages. You should avoid applying your own world knowledge.</p>
+
+                <p>Direct evidence</p>
+                <ul>
+                    <li>Sentence directly states information that supports/refutes the claim</li>
+                    <li>Sentence states information that is synonymous with information in the claim</li>
+                    <li>Sentence refutes the claim through negation or quantification</li>
+                    <li>Sentence provides information about a different entity and only one entity is permitted (e.g. place of birth can only be one place)</li>
+                </ul>
+                <p>More justification needed:</p>
+                <ul><li>Sentence provides information about something that is more general or specific than the claim.</li></ul>
+<p>In this case, look up the item and add this as supporting evidence.</p>
+                <em>E.g. “Beidha is in the Middle East”. Is justified using the sentences “Beidha is in …. near Jordan” from the original page and “Jordan is considered to be among the safest of Arab countries in the Middle East” from the wiki page for Jordan.</em>
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+<div class="container-fluid">
+
+    <div class="row topmargin">
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+            <div class="callout left">
+                <h4>Labelling Claims About</h4>
+            </div>
+        </div>
+
+        <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+            <div class="ebox">
+                <h4><strong>{{entity}}</strong></h4>
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="row topmargin">
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+
+            <div class="claimsall" sticky use-placeholder="true">
+                <h3>Claim</h3>
+
+                <div class="callout">
+                    <h4 class="ebox">{{claim.text}}</h4>
+                    Is the claim suitable for verification?
+                    <form style="margin-top:10px;">
+                        <input ng-disabled="active_verdict>=0" ng-model="verifiable" value="1" type="radio" name="claim" id="ver"/> <label for="ver">Yes</label><br />
+                        <input ng-disabled="active_verdict>=0" ng-model="verifiable" value="2" type="radio" name="claim" id="notvertypo"/> <label for="notvertypo">No. Typo.</label><br />
+                        <input ng-disabled="active_verdict>=0" ng-model="verifiable" value="3" type="radio" name="claim" id="notvernotver"/> <label for="notvernotver">No. Not verifiable.</label>
+                    </form>
+                </div>
+
+
+
+                <div class="" ng-show="verifiable ==1">
+                    <h3>Verdicts</h3>
+
+                    <div class="bottommmargin callout">
+
+                        <div class="bottommargin" ng-repeat="verdict in verdicts track by $index" ng-show="verdict!=0">
+
+                            <h4>Verdict {{$index+1}}<span ng-hide="selecting_claim[$index]">: <span ng-show="ref==1">Supports</span><span ng-show="ref==2">Refutes</span></span></h4>
+
+                            <div ng-show="selecting_claim[$index]">
+                            <input ng-model="verdicts[$index]" ng-click="" ng-value="1" type="radio" name="claim{{$index}}" ng-attr-id="supports{{$index}}"/> <label ng-attr-for="supports{{$index}}">Supports</label><br />
+                            <input ng-model="verdicts[$index]" ng-click="" ng-value="2" type="radio" name="claim{{$index}}" ng-attr-id="refutes{{$index}}"/> <label ng-attr-for="refutes{{$index}}">Refutes</label><br />
+
+                            <button class="btn btn-primary" ng-disabled="(verdicts[$index]!=1 && verdicts[$index]!=2) || evidence_counts[$index]==0" ng-click="selecting($index,false); original_done=true; console.log('done')">Done</button>
+                            <button class="btn btn-secondary" ng-click="selecting($index,false); removeEvidence($index); ">Cancel</button>
+                            </div>
+                            <div ng-hide="selecting_state">
+                                {{evidence_counts[$index]}} sentences selected <br />
+                                <a href="javascript:void(0)" ng-click="selecting($index,true); original_done=false; ">Edit</a> | <a href="javascript:void(0)" confirmed-click="removeEvidence($index); $apply()" ng-confirm-click="Removing this verdict will remove all associated evidence">Remove</a>
+                            </div>
+                        </div>
+
+
+                        <button class="btn btn-primary" ng-hide="selecting_state" ng-click="addVerdict(); selecting(verdicts.length-1,true)"><span class="glyphicon glyphicon-plus"></span>Add Verdict and Evidence</button>
+                        <p>
+                        <small>If no evidence can be found. Submit with no verdicts.</small>
+</p>
+                    </div>
+
+                </div>
+
+                 <div class="" ng-show="(verifiable==1&&active_verdict<0) || verifiable==2 || verifiable==3">
+
+                     <h3>Submit</h3>
+                     <div class="topmargin callout">
+                        <button class="btn btn-primary" ng-click="onSubmit()">Submit</button>
+
+                         </div>
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+        <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+
+                    <modal visible="showModal1" on-sown="modalOneShown()" on-hide="modalOneHide()">
+                    <modal-header title="Add Another Page"></modal-header>
+                    <modal-body>
+                        <h3>Add Your Wikipedia Page</h3>
+                        <p>Search for a relevant page from Wikipedia (using <a href="http://google.com" target="_blank">Google</a> or <a href="https://en.wikipedia.org" target="_blank">Wikipedia</a>) and paste the URL in the box below</p>
+                        <input ng-model="customAddUrl" placeholder="e.g. https://en.wikipedia.org/wiki/Keanu_Reeves or Reality_television" name="addcustom" style="width:100%;margin-bottom:10px;display:block" /><button ng-click="addCustom(customAddUrl)" class="btn">Add</button>
+
+                        <h3>Related Pages</h3>
+                        <div style="margin-bottom:20px; " ng-repeat="item in extra_context" ng-hide="wikis[active_verdict].map(wikiNames).includes(item)">
+                            <button class="btn" ng-click="addItem(item); hide(1)">Add</button>
+
+                            {{item}}
+                        </div>
+                    </modal-body>
+                    </modal>
+            <div style="float:right">
+                <button class="btn btn-primary" ng-disabled="active_verdict<0" ng-click="showModal1 = true"><span class="glyphicon glyphicon-plus"></span>Add Another Page</button>
+            </div>
+
+
+
+            <h3>Wikipedia article for {{entity}}</h3>
+            <div class="" ng-repeat="line in lines track by $index" ng-init='sent_idx = $index; words=line.split("\t")[1].split(" ");' ng-class="{'ebox': words.length>1, 'pskip': words.length<=1 }">
+
+                    <div style="display:table-cell; width:180px; padding:10px;" ng-show="selecting_state && words.length>1" >
+                        <input type="checkbox" ng-value="1" ng-attr-name="select_sent{{entity}}_{{sent_idx}}" ng-attr-id="sent_sup{{entity}}_{{sent_idx}}" ng-change="sent_selections_change()" ng-model="$parent.sent_selections[active_verdict][entity][sent_idx]" /> <label ng-attr-for="sent_sup{{entity}}_{{sent_idx}}">Provides Evidence</label>
+                     </div>
+
+
+                    <div style="display:table-cell">
+                        <span class="word" ng-repeat='word in words track by $index'> {{word}} </span>
+                    </div>
+            </div>
+
+
+
+
+
+            <div ng-repeat="wiki in wikis[active_verdict]" ng-init="entity=wiki[0]; lines=wiki[1]; canonical_entity=wiki[2]; sent_selections[active_verdict][canonical_entity] = {}">
+
+                <div style="float:right">
+                    <button class="btn btn-danger" confirmed-click="removeEntity(entity)" ng-confirm-click="Removing {{entity}} will also remove its annotations for this verdict"><span class="glyphicon glyphicon-minus"></span>Remove</button>
+                </div>
+
+
+                <h3>Wikipedia article for {{entity}}</h3>
+                <div class=""
+                     ng-repeat="line in lines track by $index"
+                     ng-init='sent_idx = $index; sent_selections[active_verdict][canonical_entity][sent_idx]  =0; words=line.split("\t")[1].split(" ");'
+                     ng-class="{'ebox': words.length>1, 'pskip': words.length<=1 }">
+                        <div style="display:table-cell; width:180px; padding:10px;" ng-show="selecting_state && words.length>1" >
+                        <input type="checkbox" ng-value="1" ng-attr-name="select_sent{{entity}}_{{sent_idx}}" ng-attr-id="sent_sup{{entity}}_{{sent_idx}}" ng-change="sent_selections_change()" ng-model="$parent.sent_selections[active_verdict][canonical_entity][sent_idx]" /> <label ng-attr-for="sent_sup{{entity}}_{{sent_idx}}">Provides Evidence</label>
+                     </div>
+
+
+                    <div style="display:table-cell">
+                        <span class="word" ng-repeat='word in words track by $index'> {{word}} </span>
+                    </div>
+                    </div>
+
+
+            </div>
+
+
+
+        </div>
+
+
+
+
+    </div>
+
+</div>

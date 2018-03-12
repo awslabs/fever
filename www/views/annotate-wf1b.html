@@ -1,0 +1,614 @@
+<div ng-class="{sandbox:testingMode}">
+<div class="container wf1b">
+    <h1>Claim Modification Task (WF1b)</h1>
+
+    <div ng-show="testingMode">
+        <h4 style="color:red; margin-bottom:0;">Sandbox Environment</h4>
+        <div style="color:red;">Claims you write will be recorded. But will not form part of the final dataset.</div>
+    </div>
+
+    
+    <div class="row topmargin">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="callout">
+                <h4>Guidelines</h4>
+                <p>The objective of this task is to <strong>generate modifications to claims</strong>. The modifications can be either <strong>true or false</strong>. You will be given specific instructions about the types of modifications to make.</p>
+                <ul>
+                    <li>Use the <strong>original claims</strong> and the dictionary as the basis for your modifications to facts about <strong>{{entity}}</strong></li>
+                    <li>Reference any entity directly (i.e. pronouns and nominals should not be used).</li>
+                    <li>Minor variations of names are acceptable (e.g. John F Kennedy, JFK, President Kennedy).</li>
+                    <li><strong>Avoid</strong> vague or cautions language (e.g. might be, may be, could be, is reported that)</li>
+                    <li>Correct capitalisation of entity names should be followed (India, not india).</li>
+                    <li>Sentences should end with a period.</li>
+                    <li>Numbers can be formatted in any appropriate English format (including as words for smaller quantities). </li>
+                    <!--<li>Additional world knowledge is given to the you in the form of a dictionary. This allows for more complex claims to be generated in a structured manner with information that can be backed up from Wikipedia</li>-->
+                    <li>Some of the extracted text might not be accurate. These are still valid candidates for summary. It is not your job to fact check the information</li>
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+        
+        
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>Modifying Claims About</h4>
+            </div>
+        </div>
+            
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="ebox">
+                <h4><strong>{{entity}}</strong></h4>
+            </div>
+        </div>
+    </div>
+
+
+        <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>Source Sentence</h4>
+                <p>This is the sentence that is used to substantiate your claims about {{entity}}</p>
+            </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <article class="sentence">{{sentence}}</article>
+            <article class="context" ng-show="showcontext">{{context_before}} <strong>{{sentence}}</strong> {{context_after}}</article>
+            <a href="javascript:void(0)" ng-hide="showcontext" ng-click="showcontext = !showcontext">Show Context</a>
+            <a href="javascript:void(0)" ng-show="showcontext" ng-click="showcontext = !showcontext">Hide Context</a>
+
+        </div>
+
+    </div>
+
+
+    <div class="row topmargin">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="callout left">
+                <h4>Dictionary</h4>
+                <p>Click the word for a definition. These definitions can be used to support the claims you write</p>
+                <p>The dictionary comes from the blue links on Wikipedia</p>
+            </div>
+        </div>
+            
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">  
+            <div class="ebox">
+                <div class="dictionary_item" ng-repeat="(key, value) in dictionary"><h4><a href="javascript:void(0)" ng-click="show_dictionary_item = ! show_dictionary_item">{{key}}</a></h4> <div ng-show="show_dictionary_item">{{value}}</div></div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="row topmargin">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="callout">
+                <h4>Modified Claims (one claim per line)</h4>
+
+                <p>Aim to spend about <strong>1 minute</strong> generating each claim. </p>
+
+                <p>You <strong>are allowed to incorporate your own world knowledge</strong> in making these modifications and misinformation.</p>
+
+                <p>Generate both <strong>true and false</strong> modifications</p>
+
+                <p>All facts should reference any entity directly (i.e. pronouns and nominals should not be used).</p>
+
+                <p>The mutations you produce <strong>should be <u>objective</u> (i.e. not subjective) and <u>verifiable</u> using information/knowledge that would be publicly available</strong> </p>
+
+                <p>If it is not possible to generate facts or misinformation, leave the box blank.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <div ng-repeat="claim in claims track by $index" >
+        <div class="row topmargin">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="callout left">
+                    <h4>Original Claim</h4>
+                    <div class="ebox">
+                    <h4>{{claim}}</h4>
+                    </div>
+                    Generated From: <em>{{sentence}}</em>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="row topmargin">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <div class="dictionary_item">
+                    <div class="ebox" style="background-color:#f6fca5  !important;">
+                        <h4>Rephrase the original claim (Type 1)</h4>
+                        <p>Modify the claim by rephrasing it or providing a paraphrase so that the meaning is preserved. You should aim to substitute entities and relations with synonyms if possible. </p>
+
+                        <p><strong>The rephrased claim should both imply and be implied by the original claim.</strong></p>
+
+                        <p>The mutated claim must be about <strong>{{entity}}</strong>. </p>
+
+                        <a href="javascript:void(0)"  tabindex="-1" ng-click="showrephrase = !showrephrase">Examples</a>
+                        <div ng-show="showrephrase" class="showrephrase">
+
+                            <div class="ebox">
+                                <p><strong>One Direction earned $75 million during their career.</strong></p>
+
+                                <ul class="checklist badlist">
+                                    <li><div>One Direction earned a lot of money in their career.</div></li>
+                                </ul>
+                                This claim is subjective and can't be verified.
+                            </div>
+
+
+                            <div class="ebox">
+                                <p><strong>Lydon B. Johnson was sworn in as president the day after John F. Kennedy was killed.</strong></p>
+                                <ul class="checklist goodlist">
+                                    <li><div>After the assassination of JFK, vice president Lyndon B. Johnson was sworn on the following day.</div></li>
+                                    <li><div>When John F. Kennedy was assassinated, Lyndon B. Johnson was sworn in the next day.</div></li>
+                                </ul>
+                            </div>
+
+                            <div class="ebox">
+                                <p><strong>Lionel Messi has scored many times in his career.</strong></p>
+                                <ul class="checklist goodlist">
+                                    <li><div>Across his career, Messi has been a prolific goalscorer.</div></li>
+                                </ul>
+                                <ul class="checklist badlist">
+                                    <li><div>Messi has been the highest scoring player in his club.</div></li>
+                                </ul>
+                                (in this case, being the highest scoring player does imply that he has scored many goals. But this conclusion cannot be reached given the original claim - this would be a correct claim for type 5 though)
+                            </div>
+
+                            <div class="ebox">
+                                <p><strong>India borders 6 countries.</strong></p>
+                                <ul class="checklist goodlist">
+                                    <li><div>There are six nations that The Republic of India shares a land border with.</div></li>
+                                    <li><div>India is adjacent to 6 countries</div></li>
+                                </ul>
+                            </div>
+
+                        </div>
+
+                        <textarea ng-model="rephrase[claim]"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <div class="dictionary_item">
+                    <div class="ebox" style="background-color:#FCD8CF !important; ">
+                        <h4>Negate the original claim (Type 2)</h4>
+                        <p>Change the sentence to negate the meaning.</p>
+
+                        <p><strong>The mutated claim should imply the opposite of the original claim.</strong></p>
+
+                        <p>The negations could be made through:</p>
+
+                        <ul>
+                            <li>Alternative wordings that change the meaning of the sentence:<br />(e.g. John was a straight-A student - John failed all his exams.)<br/>(e.g. Crete is an island. Crete is land-locked)</li>
+                            <li>Using different quantities or quantifiers: <br />(e.g. All American Overseas Territories are islands. Only two of the American Overseas Territories are islands.)</li>
+                            <li>Substituting to a different entity that negates the original claim. <br />(e.g. John McCain is an American politician. John McCain is a Canadian Politician)</li>
+                        </ul>
+
+                        <p><strong>Avoid using the words <em>no</em>, <em>not</em> and <em>never</em></strong> to negate the meaning unless essential. These mutations are often easy to detect.</p>
+
+                        <p>The mutated claim must be about <strong>{{entity}}</strong>. </p>
+
+                        <a href="javascript:void(0)"  tabindex="-1" ng-click="shownegate = !shownegate">Examples</a>
+                        <div ng-show="shownegate" class="showrephrase">
+
+                            <div class="ebox">
+                                <p><strong>One Direction earned $75 million during their career.</strong></p>
+                                <ul class="checklist goodlist">
+                                    <li><div>One Direction were a not for profit band.</div></li>
+                                </ul>
+                                <ul class="checklist badlist">
+                                    <li><div>One Direction did not earn $75 million during their career.</div></li>
+                                    <li><div>One Direction didn't earn that much money in their career.</div></li>
+                                </ul>
+                                Very simple negation. Easy to detect<br />
+                                This claim is subjective and can't be verified.
+                            </div>
+
+
+                            <div class="ebox">
+                                <p><strong>Different regions feel different effects from Global warming.</strong></p>
+                                <ul class="checklist goodlist">
+                                    <li><div>Global warming affects all regions in exactly the same way.</div></li>
+                                    <li><div>Only one region is affected by Global warming.</div></li>
+                                    <li><div>There are no effects from Global warming</div></li>
+                                </ul>
+
+                                The last example uses the word no. But this changes the meaning of the sentence to indirectly negate the original claim.
+                            <br/><br/>
+
+                                <ul class="checklist badlist">
+                                    <li><div>Different regions do not feel different effects from Global warming.</div></li>
+                                </ul>
+
+                                This example is a simple negation that is easy to detect.
+
+                            </div>
+
+                            <div class="ebox">
+                                <p><strong>There are characters who travel with Doctor Who.</strong></p>
+                                <ul class="checklist goodlist">
+                                    <li><div>Doctor Who travels alone.</div></li>
+                                </ul>
+                            </div>
+
+                            <div class="ebox">
+                                <p><strong>Henry Condell was an actor who worked with Shakespeare.</strong></p>
+                                <ul class="checklist goodlist">
+                                    <li><div>Henry Condell wasn't alive at the same time as Shakespeare.</div></li>
+                                </ul>
+                                <ul class="checklist badlist">
+                                    <li><div>Henry Condell did not work with Shakespeare.</div></li>
+                                </ul>
+                                Too simple.
+
+                            </div>
+
+                        </div>
+
+
+                        <textarea ng-model="negate[claim]" ng-class="{boxerror: (negate[claim].split(' ').indexOf('not')!=-1 || negate[claim].split(' ').indexOf('never')!=-1 )}" ></textarea>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row topmargin">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="callout left">
+                    <h4>Original Claim</h4>
+                    <div class="ebox">
+                    <h4>{{claim}}</h4>
+                    </div>
+                    Generated From: <em>{{sentence}}</em>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row topmargin">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <div class="dictionary_item">
+                    <div class="ebox" style="background-color:#DFD5F1  !important;">
+                        <h4>Substitution for a similar entity and/or relation (Type 3)</h4>
+                        <p>Substitute either a relation, property and/or an attribute of {{entity}} in the claim to something else from the <strong>same set of things</strong>.</p>
+
+                        <p><strong>AVOID rephrasing the original claim.</strong></p>
+
+                        <p><strong>The mutated claim should not imply the original claim.</strong></p>
+
+                        <p>The mutated claim must be about <strong>{{entity}}</strong>. </p>
+
+                        <a href="javascript:void(0)"  tabindex="-1"  ng-click="showsim = !showsim">Examples</a>
+                        <div ng-show="showsim" class="showrephrase">
+
+
+
+                            <div class="ebox">
+                                <p><strong>Leonardo DiCaprio has continued acting since 2000.</strong></p>
+                                <ul class="checklist goodlist">
+                                    <li><div>Leonardo DiCaprio has continued dancing since 2000.</div></li>
+                                </ul>
+                            </div>
+
+                            <div class="ebox">
+                                <p><strong>Leonardo DiCaprio has starred in a wide range of movies.</strong></p>
+                                <ul class="checklist goodlist">
+                                    <li><div>Leonardo DiCaprio has reviewed a wide range of movies.</div></li>
+                                    <li><div>Leonardo DiCaprio has acted in a wide range of TV shows.</div></li>
+                                </ul>
+
+                                <ul class="checklist badlist">
+                                    <li><div>Leonardo DiCaprio has acted in a wide range of movies.</div></li>
+                                </ul>
+                                this just rephrases the original claim (type 1)
+                            </div>
+
+
+                            <div class="ebox">
+                                <p><strong>Brazil has a democracy.</strong></p>
+                                <ul class="checklist goodlist">
+                                    <li><div>Brazil is a theocratic state.</div></li>
+                                </ul>
+                                <ul class="checklist badlist">
+                                    <li><div>Brazil is a republic.</div></li>
+                                    <li><div>Brazil has a government.</div></li>
+                                </ul>
+                                Republic implies democracy (type 5). <br />Government is implied by democracy (type 6)
+                            </div>
+
+
+                            <div class="ebox">
+                                <p><strong>The final season of Lost was watched by 11 million viewers.</strong></p>
+                                <ul class="checklist goodlist">
+                                    <li><div>The final season of Lost was watched by 5 million viewers.</div></li>
+                                </ul>
+                                <ul class="checklist badlist">
+                                    <li><div>The final season of lost was watched by 11 million children.</div></li>
+                                </ul>
+
+                            In this case, this claim negates the original claim
+                            </div>
+
+
+                        </div>
+
+
+                        <textarea ng-model="substitute_similar[claim]"></textarea>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <div class="dictionary_item">
+                    <div class="ebox" style="background-color:#A8CCC9  !important;">
+                        <h4>Substitution for a dissimilar entity and/or relation  (Type 4)</h4>
+                        <p>Substitute either a relation, property and/or an attribute of {{entity}} in the claim to something plausible <strong>from a different set of things</strong>.</p>
+
+                        <p><strong>AVOID rephrasing the original claim.</strong></p>
+
+                        <p><strong>The mutated claim should not imply the original claim.</strong></p>
+
+                        <p>The mutated claim must be about <strong>{{entity}}</strong>. </p>
+
+                        <a href="javascript:void(0)" tabindex="-1" ng-click="showdis = !showdis">Examples</a>
+                        <div ng-show="showdis" class="showrephrase">
+
+                            <div class="ebox">
+                                <p><strong>Mark Zuckerberg was born in 1984.</strong></p>
+                                <ul class="checklist goodlist">
+                                    <li><div>Mark Zuckerberg finished college in 1984.</div></li>
+                                </ul>
+                            </div>
+
+                            <div class="ebox">
+                                <p><strong>One Direction earned roughly $75 million in 2014</strong></p>
+                                <ul class="checklist badlist">
+                                    <li><div>One Direction earned 75 air miles in 2014.</div></li>
+                                </ul>
+
+                                This sort of information isn't normally publicly available
+                            </div>
+
+                            <div class="ebox">
+                                <p><strong>Mark Zuckerberg's middle name is Elliot.</strong></p>
+                                <ul class="checklist badlist">
+                                    <li><div>Mark Zuckerberg's middle name is Jean-Luc</div></li>
+                                </ul>
+                                This is just another name (similar item) which is type 3. There are no suitable substitutions in this case.
+                            </div>
+
+
+                            <div class="ebox">
+                                <p><strong>India has coast to the south of its landmass.</strong></p>
+                                <ul class="checklist goodlist">
+                                    <li><div>India has China to the south of its landmass.</div></li>
+                                    <li><div>India has Sri Lanka to the south of its landmass.</div></li>
+                                    <li><div>The Bermuda Triangle is to the south of India's landmass.</div></li>
+                                </ul>
+
+                                <ul class="checklist badlist">
+                                    <li><div>India has islands to the south of its landmass</div></li>
+                                    <li><div>India has an ocean to the south of its landmass</div></li>
+                                </ul>
+
+                                Having islands to the south of the land mass is another geographic feature similar to coast (type 3). <br />Having an ocean implies there is a coast (type 5)
+                            </div>
+
+                            <div class="ebox">
+                                <p><strong>CO2 emissions are responsible for global warming.</strong></p>
+                                <ul class="checklist goodlist">
+                                    <li><div>Agriculture and farming are responsible for global warming.</div></li>
+                                    <li><div>Renewable energy is responsible for global warming.</div></li>
+                                    <li><div>Fossil fuels are responsible for global warming.</div></li>
+                                    <li><div>Governments are responsible for global warming.</div></li>
+                                </ul>
+                                <ul class="checklist badlist">
+                                    <li><div>Methane emissions are responsible for global warming.</div></li>
+                                    <li><div>Carbon Dioxide is responsible for global warming.</div></li>
+                                </ul>
+                                <br />
+                                Methane is a gas similar to CO2 (type 3).<br />Carbon Dioxide is another way of expressing CO2, this is rephrasing (type 1).
+                            </div>
+
+
+
+                        </div>
+
+
+                        <textarea ng-model="substitute_dissimilar[claim]"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row topmargin">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="callout left">
+                    <h4>Original Claim</h4>
+                    <div class="ebox">
+                    <h4>{{claim}}</h4>
+                    </div>
+                    Generated From: <em>{{sentence}}</em>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="row topmargin">
+
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <div class="dictionary_item">
+                    <div class="ebox" style="background-color:#fffae3  !important">
+                        <h4>Make the Claim more Specific (So that the new claim implies the original) (Type 5)</h4>
+                        <p>Modify the claim by replacing either a relation, property and/or an attribute of {{entity}} to something <strong>more specific</strong> that implies the original claim.</p>
+
+                        <p><strong>AVOID rephrasing the original claim.</strong></p>
+
+                        <p><strong>The mutated claim should imply the original claim.</strong></p>
+
+                        <p>The mutated claim must be about <strong>{{entity}}</strong>. </p>
+
+                        <a href="javascript:void(0)"  tabindex="-1"  ng-click="showspec = !showspec">Examples</a>
+                        <div ng-show="showspec" class="showrephrase">
+
+                            <div class="ebox">
+                                <p><strong>While Barack Obama was in office, he signed landmark bills.</strong></p>
+                                <ul class="checklist goodlist">
+                                    <li><div>Barack Obama signed the landmark Obamacare bill.</div></li>
+                                    <li><div>Barack Obama signed the bill of rights.</div></li>
+                                </ul>
+                                <ul class="checklist badlist">
+                                    <li><div>When he was in office, Barack Obama signed legislative measures.</div></li>
+                                </ul>
+                                A bill is a type of legislation and so this last claim is of type 6.
+                            </div>
+
+                            <div class="ebox">
+                                <p><strong>Brazil became gained independence in 1822.</strong></p>
+                                <ul class="checklist badlist">
+                                    <li><div>Brazil became fully independent in 1822</div></li>
+                                </ul>
+                                This is a rephrasing (type 1), also it is not possible to measure how independent a country is.
+                            </div>
+
+
+                            <div class="ebox">
+                                <p><strong>Isreal borders two seas</strong></p>
+                                <ul class="checklist goodlist">
+                                    <li><div>Israel borders both the Mediterranean Sea and the Red Sea.</div></li>
+                                    <li><div>Israel borders both the Celtic Sea and the Bay of Biscay.</div></li>
+                                </ul>
+
+                            </div>
+
+
+                            <div class="ebox">
+                                <p><strong>Johnny Depp was nominated for Academy Awards.</strong></p>
+                                <ul class="checklist goodlist">
+                                    <li><div>Johnny Depp has been nominated to the Academy Awards for Best Actor.</div></li>
+                                </ul>
+                                <ul class="checklist badlist">
+                                    <li><div>Johnny Depp has been nominated for Best Actor.</div></li>
+                                </ul>
+                                Johnny Depp could have been nominated for best actor at another award show and it is not possible to imply the original claim in this case.
+                            </div>
+
+
+
+                        </div>
+
+
+                        <textarea ng-model="specific[claim]"></textarea>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <div class="dictionary_item">
+                    <div class="ebox" style="background-color:#beebe6  !important;">
+
+                        <h4>Make the Claim more General (So that the new claim is implied by the original) (Type 6)</h4>
+                        <p>Modify the claim by replacing either a relation, property and/or an attribute of {{entity}} to something <strong>more general</strong> that is implied by the original claim.</p>
+
+                            <p><strong>AVOID rephrasing the original claim.</strong></p>
+
+                        <p><strong>The mutated claim should be implied by the original claim.</strong></p>
+
+                        <p>The mutated claim must be about <strong>{{entity}}</strong>. </p>
+
+                        <a href="javascript:void(0)"  tabindex="-1" ng-click="showgen = !showgen">Examples</a>
+                        <div ng-show="showgen" class="showrephrase">
+
+                            <div class="ebox">
+                                <p><strong>Russia is part of Europe and Asia.</strong></p>
+                                <ul class="checklist goodlist">
+                                    <li><div>The country of Russia spans across two continents.</div></li>
+                                </ul>
+                            </div>
+
+                            <div class="ebox">
+                                <p><strong>Tom Cruise won an AFI Award for his work in Mission Impossible.</strong></p>
+                                <ul class="checklist goodlist">
+                                    <li><div>Tom Cruise won an award for a film.</div></li>
+                                    <li><div>Tom Cruise worked on one of the films in the Mission Impossible franchise.</div></li>
+                                </ul>
+                                <ul class="checklist badlist">
+                                    <li><div>Tom Cruise acted in Mission Impossible.</div></li>
+                                </ul>
+                                (in this case, we know that Tom Cruise had worked in the film Mission Impossible, but there are other roles such as directing or producing he could have taken)
+                            </div>
+
+                            <div class="ebox">
+                                <p><strong>Kim Kardashian is a "pop culture phenomenon".</strong></p>
+                                <ul class="checklist badlist">
+                                    <li><div>Kim Kardashian is discussed in the media.</div></li>
+                                </ul>
+
+                                (the original claim is vague. there's no way to tell that being a pop culture phenomenon means that you are discussed. best to skip this one.)
+                            </div>
+
+
+                            <div class="ebox">
+                                <p><strong>Donald Trump was a student at Wharton School.</strong></p>
+
+                                <ul class="checklist goodlist">
+                                    <li><div>Donald Trump went to Wharton School.</div></li>
+                                </ul>
+
+                                <ul class="checklist badlist">
+                                    <li><div>Donald Trump's degree is from Wharton School.</div></li>
+                                </ul>
+
+                                You can go to a school without being a student (for example as a teacher). Just because Donald was a student there does not imply he finished and graduated with a degree (this would be good for type 5 though).
+                            </div>
+
+
+                        </div>
+
+
+
+                        <textarea ng-model="general[claim]"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+        </div>
+
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+
+            <form class="navigation_actions" ng-submit="submit()">
+                <input type="submit" name="submit" value="Submit Claims" ng-disabled="working||done" class="btn btn-primary"/>
+
+                <div ng-show="working">Loading</div>
+                <div ng-show="done">Done. Loading next workflow item</div>
+            </form>
+        </div>
+
+    </div>
+
+    <!--
+
+    <div style="position:fixed; top:0px; right:30px; border: 1px solid #333; background:white">
+        Time on this page: <time>{{timer}}</time><br/>
+        Number of claims: {{count}} this session.
+    </div>-->
+</div>
+</div>

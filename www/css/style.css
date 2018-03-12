@@ -1,0 +1,210 @@
+
+article.sentence, .specific_guidelines {
+    background: #eaeaea;
+    border:1px solid #ccc;
+    padding: 10px;
+}
+
+textarea {
+    width:100%;
+    height:100px;
+    border: 1px solid #ccc;
+}
+
+.ebox {
+    font-weight: 400;
+    background: #eaeaea;
+    border:1px solid #ccc;
+    padding: 10px;
+}
+
+.pskip {
+    margin-top:20px;
+
+}
+
+.pskip2 {
+    margin-top:0px;
+
+}
+
+.dictionary_item {
+    margin-bottom: 15px;
+}
+
+.dictionary_desc { 
+display: none;
+}
+
+.btn {
+    font-size:18px;
+}
+
+.navigation_actions {
+    padding-top:10px;
+    text-align: right;
+}
+
+body {
+	font-family: Helvetica;
+	
+}
+
+.boxerror{
+
+    color:red;
+
+}
+
+div.callout {
+	width: 100%;
+}
+
+div.callout {
+	background-color: #fefefe;
+	background-image: -moz-linear-gradient(top, #fefefe, #efefef);
+	position: relative;
+
+	padding: 10px;
+	border-radius: 3px;
+	box-shadow: 0px 0px 20px #999;
+
+	min-height: 50px;
+	border: 1px solid #ccc;
+	
+	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+}
+
+.callout::before {
+	content: "";
+	width: 0px;
+	height: 0px;
+	border: 0.8em solid transparent;
+	position: absolute;
+}
+
+.callout.left::before {
+	right: -22px;
+	top:10px;
+	border-left: 10px solid #ccc;
+}
+
+
+.callout h4 {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.topmargin {
+    padding-top: 40px !important;
+}
+
+.bottommargin {
+    margin-bottom: 40px !important;
+}
+
+blockquote {
+    font-size:100% !important;
+}
+
+h5 {
+    font-weight: bold;
+}
+
+.navigation_actions {
+    margin-bottom:40px;
+
+}
+
+.mutation h4 {
+    font-weight:bold !important;
+}
+
+#elebox {
+    display:none;
+}
+
+ul.checklist {
+  list-style: none;
+  margin-left:0px;
+    padding-left:0;
+
+}
+
+ul.checklist li {
+    margin-left:0px;
+
+}
+
+
+ul.checklist li div {
+    margin-left:1.75em;
+    display:inline-block;
+    margin-top:-1.75em;
+
+}
+
+ul.goodlist li:before {
+  content: '✅';
+}
+
+
+ul.badlist li:before {
+  content: '❌';
+}
+
+.showrephrase {
+padding-top:10px;
+padding-bottom:10px;
+}
+
+.claimsall {
+    overflow-y: auto;
+    max-height: 100%;
+    min-height: 100%;
+}
+
+.word_selection {
+background-color: blue; color:white;}
+
+.word_clickable {
+cursor:pointer;
+padding:5px; border: 1px dashed #ddd; margin:5px;
+line-height:2em;
+
+}
+.highlight {
+background:lightyellow !important;
+}
+
+.topmenu {
+
+    height:50px;
+    background-color:#443742;
+    color:#fff;
+    line-height:50px;
+}
+
+.sandbox {
+border-left:10px solid #EDD9A3; border-right:10px solid #EDD9A3;
+
+}
+table, th, td {
+    border: 1px solid black;
+    padding:5px;
+}
+
+.hsupports {
+background:limegreen !important;
+color:white;
+}
+
+.hrefuted {
+background:lightpink !important;
+color:white;
+}
+
+.gul li,.gul ol,.gul ul {
+    margin-bottom: 20px;
+
+}

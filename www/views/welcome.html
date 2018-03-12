@@ -1,0 +1,16 @@
+<div class="container">
+    <h1>FEVER Claim Generation and Annotation Tool</h1>
+
+    <h3>WF1: Claim Generation</h3>
+    <p>The objective of this task is to generate a mixture of true claims and false claims from a source sentence extracted from Wikipedia.</p>
+    <p>In the sandbox mode. Annotations will be saved, but will not form part of the final data set. When done, just close the window 👏 </p>
+    <div class="navigation_actions"><button ng-click="tutorial()" class="btn">Tutorial</button> <button ng-click="start(true)" class="btn">Enter Sandbox Mode</button> <button ng-click="start(false)" class="btn btn-primary">Enter Live Mode</button></div>
+
+    <hr />
+    <h3>WF2: Claim Labelling</h3>
+
+    <p>The purpose of this task is to identify evidence from a Wikipedia page that can be used to support or refute simple factoid sentences called claims.</p>
+    <p>In the sandbox mode. Annotations will be saved, but will not form part of the final data set.</p>
+    <div class="navigation_actions"><button ng-show="isOracle" ng-click="startOracle()" class="btn">Enter Oracle Annotation Mode</button> <button ng-click="start2(true)" class="btn">Enter Sandbox Mode</button> <button ng-click="start2(false)" class="btn btn-primary">Enter Live Mode</button></div>
+
+</div>

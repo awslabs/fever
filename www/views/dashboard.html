@@ -1,0 +1,106 @@
+<div class="container">
+    <script>
+        function show_hide() {
+            elem = document.getElementById('wf1-stats');
+            if (elem.style.display == 'none')
+                elem.style.display = 'block';
+            else
+                elem.style.display = 'none';
+        }
+    </script>
+    <h1>Dashboard</h1>
+
+    Statistics update hourly.<br />Last updated: {{last_updated}}
+
+    <h3>WF1 Live Environment</h3> (<a onclick="show_hide()" style="cursor: pointer;">show/hide</a>)
+    <div id="wf1-stats" style="display: none">
+    <h4>Quick Stats</h4>
+    <ul>
+        <li>Total Claims: {{live_count}}</li>
+        <li>Done Today: {{done_today}}</li>
+        <li>Time Spent Today: {{time_today}}</li>
+        <li>Done This Week: {{done_this_week}}</li>
+        <li>Time Spent This Week: {{time_this_week}}</li>
+        <li>Done Last Week: {{done_last_week}}</li>
+        <li>Time Spent Last Week: {{time_last_week}}</li>
+
+    </ul>
+    <h4>Reports</h4>
+    <ul>
+        <li><a href="/report/live_daily.csv">Daily Breakdown by User</a> / <a href="/report/live_time_daily.csv">Daily Time Breakdown by User</a></li>
+        <li><a href="/report/live_daily_totals.csv">Daily Totals</a></li>
+        <li><a href="/report/live_weekly.csv">Weekly Breakdown by User</a> / <a href="/report/live_time_weekly.csv">Weekly Time Breakdown by User</a></li>
+        <li><a href="/report/live_weekly_totals.csv">Weekly Totals</a></li>
+    </ul>
+
+
+    <hr />
+    </div>
+
+    <h3>WF2 Live Environment</h3>
+    <h4>Quick Stats</h4>
+    <ul>
+        <li>Total Claims: {{wf2_live_count}}</li>
+        <li>Total Claims Remaining: {{wf2_total_left}}</li>
+        <li>Done Today: {{wf2_done_today}}</li>
+        <li>Time Spent Today: {{wf2_time_today}}</li>
+        <li>Done This Week: {{wf2_done_this_week}}</li>
+        <li>Time Spent This Week: {{wf2_time_this_week}}</li>
+        <li>Done Last Week: {{wf2_done_last_week}}</li>
+        <li>Time Spent Last Week: {{wf2_time_last_week}}</li>
+    </ul>
+
+    <h4>Oracle Scoring</h4>
+    <ul>
+        <li>Overall Oracle Precision/Recall: {{p | number: 4}} {{r | number: 4}}</li>
+        <li>This Week's Oracle Precision/Recall: {{p_tw| number: 4}} {{r_tw | number: 4}}</li>
+        <li>Last Week's Oracle Precision/Recall: {{p_lw| number: 4}} {{r_lw | number: 4}}</li>
+    </ul>
+
+    <!--
+    <h4>Quorum Scoring</h4>
+    <ul>
+        <li>Quorum Fleiss Kappa/IAA%: {{fk}} {{iaa}}</li>
+        <li>This Week's Fleiss Kappa/IAA%: {{fk_tw}} {{iaa_tw}}</li>
+        <li>Last Week's Fleiss Kappa/IAA%: {{fk_lw}} {{iaa_lw}}</li>
+    </ul>
+    -->
+
+    <canvas id="canvas" class="chart chart-line" chart-options="chart_options"
+chart-dataset-override="datasetOverride"  chart-data="chart_data" chart-series="chart_series" chart-labels="chart_labels"></canvas>
+
+    <canvas id="canvas2" class="chart chart-line" chart-options="chart_options"
+chart-dataset-override="datasetOverride"  chart-data="chart_data2" chart-series="chart_series2" chart-labels="chart_labels2"></canvas>
+
+
+    <h4>Reports</h4>
+    <ul>
+        <li><a href="/report/live_flagged_claims.html">Flagged Claims</a></li>
+        <li><a href="/report/live_daily_wf2.csv">Daily Breakdown by User</a> / <a href="/report/live_time_daily_wf2.csv">Daily Time Breakdown by User</a></li>
+        <li><a href="/report/live_daily_totals_wf2.csv">Daily Totals</a></li>
+        <li><a href="/report/live_weekly_wf2.csv">Weekly Breakdown by User</a> / <a href="/report/live_time_weekly_wf2.csv">Weekly Breakdown by User</a></li>
+        <li><a href="/report/live_weekly_totals_wf2.csv">Weekly Totals</a></li>
+
+        <li><a href="/report/p_by_user.csv">Overall Precision by User</a> / <a href="/report/r_by_user.csv">Overall Recall by User</a></li>
+        <li><a href="/report/p_by_week.csv">Overall Precision by Week</a> / <a href="/report/r_by_week.csv">Overall Recall by Week</a></li>
+        <li><a href="/report/p_user_by_week.csv">Weekly Precision by User</a> / <a href="/report/r_user_by_week.csv">Weekly Recall by User</a></li>
+
+        <li><a href="/report/missed_by_all.html">Oracle Evidence Missed Overall</a> / <a href="/report/missed_by_user.html">Oracle Evidence Missed by User</a> </li>
+    </ul>
+
+    <hr />
+
+
+    <h3>Sandbox Environments</h3>
+
+    <h4>Quick Stats</h4>
+    <ul>
+        <li>Total Claims: WF1: {{sandbox_count}}, WF2: {{wf2_sandbox_count}}</li>
+    </ul>
+
+    <h4>Reports</h4>
+    <ul>
+        <li><a href="/report/sandbox_flagged_claims.html">Flagged Claims</a></li>
+        <li><a href="/report/sandbox_daily.csv">WF1 Daily Breakdown by User</a>, <a href="/report/sandbox_daily_wf2.csv">WF2 Daily Breakdown by User</a></li>
+    </ul>
+</div>
