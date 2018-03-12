@@ -11,13 +11,13 @@ python3 setup.py install
 ### Running the annotation UI
 To run the annotation UI, run:
 ```bash
-export AWS_ACCESS_KEY_ID=<YOUR_ID> 
-export AWS_SECRET_ACCESS_KEY=<YOUR_SECRET>
+export AWS_ACCESS_KEY_ID=$YOUR_KEY
+export AWS_SECRET_ACCESS_KEY=$YOUR_SECRET
 
-export SQLALCHEMY_DATABASE_URI=<URI>
+export SQLALCHEMY_DATABASE_URI=$DB_URI
 
 
-export AWS_DEFAULT_REGION=eu-west-1
+export AWS_DEFAULT_REGION=$AWS_REGION #e.g. eu-west-1
 
 python3  src/annotation/flask_services/annotation_service.py
 ```
