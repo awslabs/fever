@@ -4,9 +4,13 @@ import logging
 import os
 import time
 import uuid
-import botocore
 import boto3
+import flask
+import json
+import random
 
+from annotation.flask_services.annotation_request import AnnotationRequest
+from annotation.flask_services.user import ForwardedUserMiddleware
 from collections import defaultdict
 from decimal import Decimal
 from flask import Flask, jsonify, request
@@ -14,95 +18,37 @@ from flask import send_from_directory
 from flask_cors import CORS, cross_origin
 from sqlalchemy import func
 
+from util.wiki import get_redirects, get_wiki_clean
 from annotation.schema.annotations_rds import create_session, Claim, Sentence, Annotation, LineAnnotation, \
     AnnotationVerdict
 from annotation.schema.workflow import get_next_assignment
-from dataset.jobs.test3 import untokenize
 from persistence.s3_persistence import S3Writer
 
+
+def get_strings_from_dynamodb_row(row, key):
+    return row[key]["S"]
+
+
+def prepare_item(item):
+    print(item)
+    return {
+        key: get_strings_from_dynamodb_row(item, key)
+        for key in ["entity", "sentence", "original", "mutation_type", "mutation", "uuid"]
+    }
+
+
+
+
+#Web app + logging
 app = Flask(__name__, static_url_path='')
 CORS(app)
-
 logging.getLogger('flask_cors').level = logging.DEBUG
-
 logger = logging.getLogger(__name__)
-
-import json
-from random import Random
-
-r = Random()
-r2 = Random()
-
 ddb = boto3.resource("dynamodb")
-
-port = os.environ["FEVER_PORT"]
-
-from flask import Flask
-import flask
-
-
-class ForwardedUserMiddleware(object):
-    def __init__(self, application):
-        self.app = application
-
-    def __call__(self, environ, start_response):
-        user = environ.pop('HTTP_X_FORWARDED_USER', None)
-        if user is not None:
-            environ['REMOTE_USER'] = user.split("@")[0]
-
-        return self.app(environ, start_response)
-
-
 app = Flask(__name__)
 app.wsgi_app = ForwardedUserMiddleware(app.wsgi_app)
 
 
-def get_redirects():
-    redirs = os.path.join("data", "redirect.txt")
-    rd = dict()
-    for line in open(redirs, encoding='utf-8'):
-        bits = line.strip().split("\t")
-        if len(bits) == 2:
-            frm, to = bits
-            rd[frm] = to
-    return rd
-
-
-def recursive_redirect_lookup(redirects_list, word):
-    if word in redirects_list:
-        try:
-            return recursive_redirect_lookup(redirects_list, redirects_list[word])
-        except RecursionError:
-            return word
-    else:
-        return word
-
-
-def get_wiki_entry(name):
-    name = name.strip()
-    s3 = S3Writer("com.amazon.evi.fever.wiki")
-    try:
-        key = s3.clean("intro/"+name)
-
-        body = s3.read_string(key)
-        return {"text": body, "canonical_entity": name}
-    except botocore.exceptions.ClientError as e:
-        if e.response['Error']['Code'] == "NoSuchKey":
-            if name[0].islower():
-                return get_wiki_entry(name[0].upper()+name[1:])
-            else:
-                try:
-                    return get_wiki_entry(recursive_redirect_lookup(redirects, redirects[name]))
-                except RecursionError:
-                    logger.error("Couldn't resolve {0} from dictionary: recursive redirect loop".format(name))
-                    return None
-
-                except KeyError:
-                    logger.error("{0} has no redirect lookup".format(name))
-                    return None
-        else:
-            logger.error("Could not resolve {0} from dictionary because it doesnt exist".format(name))
-            return None
 
 
 with open("data/sandbox.json", "r") as f:
@@ -116,21 +62,8 @@ redirects = get_redirects()
 print("done")
 
 
-def on_annotate(annotation):
-    u = uuid.uuid1()
-
-    table = ddb.Table("FeverIntermediateAnnotation")
-
-    item = dict()
-    item.update(annotation)
-    item.update({'uuid': str(u)})
-    item["date"] = str(datetime.datetime.utcnow())
-    item["date_unix"] = int(datetime.datetime.utcnow().timestamp())
-    table.put_item(Item=item)
-
-    return u
-
-
+# DEPRECATED
+# Old method to get annotations - I think it's still used in the tutorial
 def get_annotations_old(claim):
     file = "data/annotation/" + str(int(claim)) + ".json"
 
@@ -142,7 +75,8 @@ def get_annotations_old(claim):
 
     return found
 
-
+# DEPRECATED
+# Old mutation method - I think it's still used in the tutorial
 @app.route("/mutate_old/<claim>/<pos>")
 @cross_origin()
 def mutate_old(claim, pos):
@@ -156,6 +90,19 @@ def mutate_old(claim, pos):
     return jsonify({"article": article.get_dict(), "annotation": annotations[int(pos)]})
 
 
+# Store the annotations from WF1 in the DDB Table
+def on_annotate(annotation):
+    u = uuid.uuid1()
+    table = ddb.Table("FeverIntermediateAnnotation")
+    item = dict()
+    item.update(annotation)
+    item.update({'uuid': str(u)})
+    item["date"] = str(datetime.datetime.utcnow())
+    item["date_unix"] = int(datetime.datetime.utcnow().timestamp())
+    table.put_item(Item=item)
+    return u
+
+# On Annotation, put the annotation in the DynamoDB
 def on_annotate2(annotation):
     mutation_types = ['rephrase', 'substitute_similar', 'substitute_dissimilar', 'specific', 'general', 'negate']
 
@@ -206,34 +153,15 @@ def on_annotate2(annotation):
                 table.put_item(Item=item)
 
 
+# Get an intermediate annotation by primary-key
 def get_annotations(annotation_id):
     table = ddb.Table("FeverIntermediateAnnotation")
     result = table.get_item(Key={"uuid": annotation_id})
-
     return result["Item"] if "Item" in result else None
 
 
-class AnnotationRequest:
-    def __init__(self, dataset, claim=None):
-        super().__init__()
 
-        if claim is None:
-            self.example = dataset[r.randint(0, len(dataset))]
-        else:
-            self.example = dataset[int(claim)]
-
-        while len(self.example["sentence"].strip()) == 0:
-            self.example = dataset[r.randint(0, len(dataset)-1)]
-
-    def get_dict(self):
-        annotation_dict = dict()
-        annotation_dict.update(self.example)
-        return annotation_dict
-
-    def get_json(self):
-        return jsonify(self.get_dict())
-
-
+# For uptime monitoring / application health check
 @app.route('/ping')
 def ping():
     return jsonify(ping='pong')
@@ -244,13 +172,14 @@ def sping():
     return jsonify(ping='pong')
 
 
+# Get the next claim
 @app.route("/next")
 @cross_origin()
 def annotate():
     annotation = AnnotationRequest(live)
     return annotation.get_json()
 
-
+# Get the sentence for annotation request
 @app.route("/get/<sent>")
 @cross_origin()
 def getsent(sent):
@@ -258,6 +187,7 @@ def getsent(sent):
     return annotation.get_json()
 
 
+# Get the sentence for the tutorial
 @app.route("/get_tutorial/<sent>")
 @cross_origin()
 def gettut(sent):
@@ -265,6 +195,9 @@ def gettut(sent):
     return annotation.get_json()
 
 
+# DEPRICATED
+# Sample an annotation type  and make an annotation request for it.
+# @James Thorne: we changed this so that the annotator must generate ALL mutations for a claim
 @app.route("/mutate/<claim>/<pos>")
 @cross_origin()
 def mutate(claim, pos):
@@ -272,7 +205,7 @@ def mutate(claim, pos):
     annotation = get_annotations(pos)
 
     mutation_types = ['rephrase', 'sub', 'spec', 'gen', 'neg']
-    next_mut = r2.randint(0, len(mutation_types)-1)
+    next_mut = random.randint(0, len(mutation_types)-1)
 
     annotation['id'] = int(annotation['id'])
     annotation['timer'] = int(annotation['timer'])
@@ -282,6 +215,7 @@ def mutate(claim, pos):
     return jsonify({"article": article.get_dict(), "annotation": annotation, "mutation": mutation_types[next_mut]})
 
 
+# Post Claim
 @app.route("/submit-claim", methods=["POST"])
 @cross_origin()
 def submit():
@@ -290,6 +224,8 @@ def submit():
     return jsonify({"pos": annotation_id})
 
 
+# Submit the number of claims that the annotator has completed and store in
+# DynamoDB to allow for tracking of annotation rate
 @app.route("/submit-stats", methods=["POST"])
 @cross_origin()
 def submit_stats():
@@ -310,6 +246,7 @@ def submit_stats():
     return jsonify({})
 
 
+# Submit the mutations and store these in DynamoDB
 @app.route("/submit-mutations", methods=["POST"])
 @cross_origin()
 def submit2():
@@ -318,6 +255,7 @@ def submit2():
     return jsonify({})
 
 
+# Return the number of annotations made for a given user
 @app.route("/count")
 def item_count():
     user = flask.request.remote_user
@@ -344,11 +282,13 @@ def item_count():
     return jsonify({"count": cnt, "count_wf2": cnt_wf2})
 
 
+# Return an annotation report for a user
 @app.route('/report/<path:path>')
 def send_report(path):
     return send_from_directory(os.path.join(os.getcwd(), 'data', 'reports'), path)
 
 
+# Display the annotation dashboard
 @app.route("/dashboard")
 def dashboard():
     with open("data/state.json", "r") as file:
@@ -365,43 +305,13 @@ def dashboard():
     return jsonify({"wf1": model, "wf2": model2, "oracle": oracle})
 
 
+# Display the current logged in user
 @app.route("/user")
 def get_user():
     return jsonify({"username": flask.request.remote_user if flask.request.remote_user is not None else "guest"})
 
 
-@app.route('/', defaults={'path': 'index.html'})
-def send_index(path):
-    return send_from_directory(os.path.join(os.getcwd(), 'www'), path)
-
-
-@app.route("/css/<path:path>")
-def send_css(path):
-    return send_from_directory(os.path.join(os.getcwd(), 'www', 'css'), path)
-
-
-@app.route("/views/<path:path>")
-def send_view(path):
-    return send_from_directory(os.path.join(os.getcwd(), 'www', 'views'), path)
-
-
-@app.route("/js/<path:path>")
-def send_js(path):
-    return send_from_directory(os.path.join(os.getcwd(), 'www', 'js'), path)
-
-
-def get_strings_from_dynamodb_row(row, key):
-    return row[key]["S"]
-
-
-def prepare_item(item):
-    print(item)
-    return {
-        key: get_strings_from_dynamodb_row(item, key)
-        for key in ["entity", "sentence", "original", "mutation_type", "mutation", "uuid"]
-    }
-
-
+# Get the next sentence for annotation in WF1 generation
 @app.route("/nextsentence")
 def get_next_sentence():
     session = create_session()
@@ -414,13 +324,13 @@ def get_next_sentence():
 
     return jsonify(claim)
 
-
+# Get a claim by ID
 @app.route("/claim/<claim_id>")
 def get_claim(claim_id):
     session = create_session()
     claim = session.query(Claim).join(Sentence).filter(Claim.id == int(claim_id)).first()
 
-    doc = get_wiki_clean(claim.sentence.entity_id)["text"]
+    doc = get_wiki_clean(claim.sentence.entity_id,redirects)["text"]
 
     ret = {
         "id": claim.id,
@@ -436,13 +346,14 @@ def get_claim(claim_id):
     return jsonify(ret)
 
 
+# Get an item from the dictionary
 @app.route("/dictionary/<path:entity_path>")
 def get_dictionary(entity_path):
 
     path_split = entity_path.split("/")
     entity, sentence_id = "/".join(path_split[:-1]), path_split[-1]
 
-    lines = get_wiki_clean(entity)["text"].split("\n")
+    lines = get_wiki_clean(entity,redirects)["text"].split("\n")
 
     sentence_id = int(sentence_id)
 
@@ -451,7 +362,7 @@ def get_dictionary(entity_path):
         entities = lines[sentence_id].split("\t")[3::2]
 
         for e1 in entities:
-            w = get_wiki_clean(e1)
+            w = get_wiki_clean(e1,redirects)
             if w is None:
                 continue
             body = w["text"]
@@ -464,51 +375,17 @@ def get_dictionary(entity_path):
     return jsonify(ret)
 
 
+# Get a wikipedia page
 @app.route("/wiki/<name>")
 def get_wiki(name):
-    return jsonify(get_wiki_clean(name))
+    return jsonify(get_wiki_clean(name,redirects))
 
 
-def get_wiki_clean(name):
-    """
-
-    First tries to get the entity from S3 without modifying the entity name
-    If the key is not found, it will apply camel-case capitalisation and look up entity in redirects.txt
-
-    :param name: The name of the entity
-    :return: a dictionary containing the body of the intro for the entity
-             and the canonical entity name after resolving it
-    """
-    entry = get_wiki_entry(name)
-    if entry is None:
-        return None
-
-    text = entry["text"]
-    # Replace problematic dictionary entries (e.g. claim #195054)
-    # for some reason, there are line breaks between the linked text and the URL of the entry
-    text = text.replace('\n\t', '\t')
-
-    out = []
-    for line in text.split("\n"):
-        if len(line.split("\t")) > 1:
-            linebits = line.split("\t")
-            linebits[1] = untokenize(linebits[1])
-
-            out.append("\t".join(linebits))
-        else:
-            out.append(line)
-
-    entry["text"] = "\n".join(out)
-    return entry
-
-
+# Get a setntence by ID from Dynamo
 @app.route("/sentence/<sent_id>")
 def get_sentence(sent_id):
-
     client = boto3.client("dynamodb")
-
     s3 = S3Writer("com.amazon.evi.fever.wiki")
-
     matching_items = client.query(
         TableName="FeverAnnotations",
         IndexName="sentence_id-index",
@@ -546,6 +423,7 @@ def get_sentence(sent_id):
     )
 
 
+# Save annotation
 @app.route("/labels/<label_id>", methods=["POST"])
 def post_labels(label_id):
     labels = request.get_json()
@@ -611,10 +489,30 @@ def post_labels(label_id):
                         session.add(LineAnnotation(page=doc, line_number=int(line), verdict_id=vdct.id))
 
     session.commit()
-
     session.close()
-
     return jsonify([])
 
+# Static routes for html, css and js
+@app.route('/', defaults={'path': 'index.html'})
+def send_index(path):
+    return send_from_directory(os.path.join(os.getcwd(), 'www'), path)
 
+
+# Static routes for html, css and js
+@app.route("/css/<path:path>")
+def send_css(path):
+    return send_from_directory(os.path.join(os.getcwd(), 'www', 'css'), path)
+
+# Static routes for html, css and js
+@app.route("/views/<path:path>")
+def send_view(path):
+    return send_from_directory(os.path.join(os.getcwd(), 'www', 'views'), path)
+
+# Static routes for html, css and js
+@app.route("/js/<path:path>")
+def send_js(path):
+    return send_from_directory(os.path.join(os.getcwd(), 'www', 'js'), path)
+
+
+port = os.environ["FEVER_PORT"]
 app.run("0.0.0.0", port, threaded=True)

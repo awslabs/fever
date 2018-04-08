@@ -5,19 +5,16 @@ import os
 from multiprocessing import Queue, Process
 
 s3 = boto3.resource("s3")
-
-bucket = s3.Bucket("com.amazon.evi.fever.wiki")
+bucket = s3.Bucket(os.getenv("BUCKET"))
+q = Queue(maxsize=4000)
 
 id = 0
-
-
-q = Queue(maxsize=4000)
 keys = []
 
 
 shutdown = False
 
-
+# On notification, read the wikipedia article and write it to file
 def process_article():
     while not (shutdown and q.empty()):
         try:
@@ -31,12 +28,12 @@ def process_article():
             print("QException")
     print("Queue finished")
 
-
+# Start clients
 for _ in range(500):
     t = Process(target=process_article)
     t.start()
 
-
+# For each item in the bucket, add it to the queue to process pages
 for obj in bucket.objects.filter(Prefix="intro_sentences/").page_size(100):
     keys.append(obj.key)
 
@@ -45,7 +42,6 @@ for obj in bucket.objects.filter(Prefix="intro_sentences/").page_size(100):
 
     if id % 1e4 == 0:
         print("Done",id)
-
     id += 1
 
 

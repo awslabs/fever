@@ -1,6 +1,11 @@
 from enum import Enum, auto
 import re
 
+
+# A very simple left-recursive parser for removing image, file and link tags from wikipedia.
+# As these tags are non-regular, we must model the this as a context-free language
+
+
 class States(Enum):
     OUTSIDE = auto()
     IN_FILE = auto()

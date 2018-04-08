@@ -1,6 +1,6 @@
 nltk
 statsmodels
-botocore
+botocore >= 1.9.23
 boto3
 PyMySQL == 0.7.9
 mwparserfromhell == 0.4.4
@@ -8,4 +8,4 @@ SQLAlchemy == 1.1.9
 Flask == 0.12.2
 jnius == 1.1.0
 tqdm == 4.14.0
-
+Flask-cors
