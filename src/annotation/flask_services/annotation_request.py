@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 from flask import jsonify
 import random
+
 
 class AnnotationRequest:
     def __init__(self, dataset, claim=None):

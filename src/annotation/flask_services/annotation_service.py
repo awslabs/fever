@@ -52,8 +52,6 @@ def prepare_item(item):
     }
 
 
-
-
 #Web app + logging
 app = Flask(__name__, static_url_path='')
 CORS(app)
@@ -62,8 +60,6 @@ logger = logging.getLogger(__name__)
 ddb = boto3.resource("dynamodb")
 app = Flask(__name__)
 app.wsgi_app = ForwardedUserMiddleware(app.wsgi_app)
-
-
 
 
 with open("data/sandbox.json", "r") as f:
@@ -106,7 +102,7 @@ def mutate_old(claim, pos):
 
 
 # Store the annotations from WF1 in the DDB Table
-def on_annotate(annotation):
+def annotate_wf1(annotation):
     u = uuid.uuid1()
     table = ddb.Table("FeverIntermediateAnnotation")
     item = dict()
@@ -117,8 +113,9 @@ def on_annotate(annotation):
     table.put_item(Item=item)
     return u
 
+
 # On Annotation, put the annotation in the DynamoDB
-def on_annotate2(annotation):
+def annotate_wf2(annotation):
     mutation_types = ['rephrase', 'substitute_similar', 'substitute_dissimilar', 'specific', 'general', 'negate']
 
     orig = get_annotations(annotation["id"])
@@ -175,7 +172,6 @@ def get_annotations(annotation_id):
     return result["Item"] if "Item" in result else None
 
 
-
 # For uptime monitoring / application health check
 @app.route('/ping')
 def ping():
@@ -193,6 +189,7 @@ def sping():
 def annotate():
     annotation = AnnotationRequest(live)
     return annotation.get_json()
+
 
 # Get the sentence for annotation request
 @app.route("/get/<sent>")
@@ -235,7 +232,7 @@ def mutate(claim, pos):
 @cross_origin()
 def submit():
     annotation = request.get_json()
-    annotation_id = on_annotate(annotation)
+    annotation_id = annotate_wf1(annotation)
     return jsonify({"pos": annotation_id})
 
 
@@ -266,7 +263,7 @@ def submit_stats():
 @cross_origin()
 def submit2():
     annotation = request.get_json()
-    on_annotate2(annotation)
+    annotate_wf2(annotation)
     return jsonify({})
 
 
@@ -338,6 +335,7 @@ def get_next_sentence():
     session.close()
 
     return jsonify(claim)
+
 
 # Get a claim by ID
 @app.route("/claim/<claim_id>")

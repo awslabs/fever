@@ -19,7 +19,6 @@ from annotation.schema.annotations_rds import create_session, Annotation, Annota
 
 session = create_session()
 
-username = "test"
 
 """
 select *,  max(annotation_assignment.expires) as maxexp from claim
