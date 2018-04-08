@@ -1,6 +1,6 @@
-## FEVER (Fact Extraction and VERification) Annotation Platform and Baselines
+# FEVER (Fact Extraction and VERification) Annotation Platform and Baselines
 
-This repository contains the FEVER annotation platform code (annotation UI) and the baselines described in the [NAACL 2018 paper](TODO).
+This repository contains the FEVER annotation platform code (annotation UI) and the baselines described in the [NAACL 2018 paper](https://arxiv.org/abs/1803.05355) as part of the Fact Extraction and VERification Shared Task. More information is available on [our website](https://sheffieldnlp.github.io/fever). 
 
 ### Setup
 To set up the packages, run:
@@ -8,22 +8,13 @@ To set up the packages, run:
 python3 setup.py install
 ```
 
-### Running the annotation UI
-To run the annotation UI, run:
-```bash
-export AWS_ACCESS_KEY_ID=$YOUR_KEY
-export AWS_SECRET_ACCESS_KEY=$YOUR_SECRET
+## Guides
 
-export SQLALCHEMY_DATABASE_URI=$DB_URI
+* [(optional) Creating the candidate sentences from the Wikipedia dump](src/annotation/README.md)
+* [Running the annotation interface](src/dataset/README.md)
 
 
-export AWS_DEFAULT_REGION=$AWS_REGION #e.g. eu-west-1
 
-python3  src/annotation/flask_services/annotation_service.py
-```
-
-### Running the baseline experiments
-TODO
 
 ## Citation
 
