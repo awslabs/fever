@@ -1,5 +1,19 @@
+# Copyright 2018 Amazon Research Cambridge
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
 import xml.sax
-import sys
 import logging
 
 class WikiReader(xml.sax.ContentHandler):
@@ -21,7 +35,6 @@ class WikiReader(xml.sax.ContentHandler):
         self.filter_namespace = filter_namespace
         self.article_callback = article_callback
         self.redirect_callback = redirect_callback
-
 
     def startElement(self, name, attributes):
         if name == "ns":
@@ -70,12 +83,9 @@ class WikiReader(xml.sax.ContentHandler):
                 self.tick += 1
                 self.report_status()
 
-
     def report_status(self):
         if self.tick % 250 == 0:
             self.logger.info('Redirects {0}, Articles {1} imported'.format(self.num_redirects,self.num_articles))
-
-
 
     def characters(self, content):
         assert content is not None and len(content) > 0

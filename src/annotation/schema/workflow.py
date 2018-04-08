@@ -1,13 +1,25 @@
+# Copyright 2018 Amazon Research Cambridge
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
 from datetime import timedelta, datetime
-
-from sqlalchemy import func, or_
-from sqlalchemy.orm import joinedload
-
-from annotation.schema.annotations_rds import create_session, Claim, Sentence, Entity, Annotation, AnnotationAssignment
+from sqlalchemy import func
+from annotation.schema.annotations_rds import create_session, Annotation, AnnotationAssignment
 
 session = create_session()
 
-username = "jim"
+username = "test"
 
 """
 select *,  max(annotation_assignment.expires) as maxexp from claim
@@ -19,10 +31,6 @@ where claim.isReval = 0
 group by claim.id
 HAVING maxexp < CURRENT_TIMESTAMP or maxexp is NULL
 limit 1
-
-"""
-
-"""
 
 """
 
