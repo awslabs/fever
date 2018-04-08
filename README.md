@@ -1,4 +1,4 @@
-# FEVER (Fact Extraction and VERification) Annotation Platform and Baselines
+# FEVER (Fact Extraction and VERification) Annotation Platform
 
 This repository contains the FEVER annotation platform code (annotation UI) and the baselines described in the [NAACL 2018 paper](https://arxiv.org/abs/1803.05355) as part of the Fact Extraction and VERification Shared Task. More information is available on [our website](https://sheffieldnlp.github.io/fever). 
 
@@ -10,10 +10,8 @@ python3 setup.py install
 
 ## Guides
 
-* [(optional) Creating the candidate sentences from the Wikipedia dump](src/annotation/README.md)
-* [Running the annotation interface](src/dataset/README.md)
-
-
+* [(optional) Creating the candidate sentences from the Wikipedia dump](src/dataset/README.md)
+* [Running the annotation interface](src/annotation/README.md)
 
 
 ## Citation
