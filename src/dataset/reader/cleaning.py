@@ -15,8 +15,8 @@
 
 import re
 
-from dataset.jobs.test2 import recursive_clean_ipa, recursive_clean_lang, recursive_clean_convert
 from dataset.reader.recursive import recursive_clean
+from util.recursive_clean import recursive_clean_ipa, recursive_clean_lang, recursive_clean_convert
 
 
 def simple_clean(text):

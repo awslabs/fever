@@ -13,14 +13,13 @@
 # limitations under the License.
 
 
+import json
+
 from botocore.exceptions import ClientError
 from tqdm import tqdm
 
-from dataset.jobs.test3 import untokenize
 from persistence.s3_persistence import S3Writer
-
-import json
-
+from util.untokenize import untokenize
 
 data_folder = "data"
 page_titles = "pages.txt"

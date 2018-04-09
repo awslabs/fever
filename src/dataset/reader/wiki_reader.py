@@ -20,7 +20,7 @@ class WikiReader(xml.sax.ContentHandler):
     def __init__(self,filter_namespace,article_callback,redirect_callback):
         super().__init__()
         self.logger = logging.getLogger(WikiReader.__name__)
-        self.logger.debug("Init WikiPageSplitter")
+        self.logger.debug("Init WikiReader")
 
         self.stack = []
         self.text = None

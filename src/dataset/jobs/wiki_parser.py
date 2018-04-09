@@ -11,8 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
+import argparse
 import logging
 
 from botocore.exceptions import ClientError
@@ -25,6 +24,12 @@ import time
 
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--s3_bucket', required=True, type=str, help='s3 bucket to place parsed articles in')
+    parser.add_argument('--sqs_queue', required=True, type=str, help="sqs queue for parser instances to read from")
+    args = parser.parse_args()
+
     start_time = time.time()
 
     ignore_existing = True
@@ -41,8 +46,8 @@ if __name__ == "__main__":
 
     logger.info("Wikipedia article parser")
 
-    sqs = SQSClient("https://sqs.eu-west-1.amazonaws.com/576699973142/fever-parse-jobs")
-    s3 = S3Writer("com.amazon.evi.fever.wiki")
+    sqs = SQSClient(args.sqs_queue)
+    s3 = S3Writer(args.s3_bucket)
 
     parser = WikiParser(s3)
 
