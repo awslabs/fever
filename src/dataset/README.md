@@ -27,8 +27,8 @@ python3 setup.py install
 
 ```bash
 export AWS_DEFAULT_REGION=eu-west-1
-export AWS_ACCESS_KEY_ID=xxx #optional
-export AWS_SECRET_ACCESS_KEY=xxx #optional
+export AWS_ACCESS_KEY_ID=xxx
+export AWS_SECRET_ACCESS_KEY=xxx
 ```
 
 ### Read Wikipedia Dump and Write Redirects File
@@ -37,9 +37,21 @@ export AWS_SECRET_ACCESS_KEY=xxx #optional
 PYTHONPATH=src python src/dataset/jobs/wiki_reader.py --s3_bucket=$BUCKET --sqs_queue=$QUEUE --wiki_file=$DUMP.XML.BZ2 --redirects_file=redirects.txt
 ```
 
-### Parse Wikipedia
+### Parse Wikipedia (can run multiple instances in parallel)
 This will use Gradle to install CoreNLP and automatically build the Java classpath. The classpath will be written to build/classpath.txt. On first run, this may take some time. 
 
 ```bash
 PYTHONPATH=src python src/dataset/jobs/wiki_parser.py --s3_bucket=$BUCKET --sqs_queue=$QUEUE
+```
+
+### Generate WF1 Candidate Sentences for Annotation Interface
+
+After Wikipedia has been parsed, these articles can be used to generate the candidate sentences for WF1.
+
+You must provide a list of pages. We used this: [https://en.wikipedia.org/wiki/User:West.andrew.g/Popular_pages](https://en.wikipedia.org/wiki/User:West.andrew.g/Popular_pages)
+
+We will also add pages which are directly linked to these. This is output into the file specified in the out_pages option
+ 
+```bash
+PYTHONPATH=src python src/annotation/jobs/one_off_jobs/generate_wf1_data.py --s3_bucket=$BUCKET --pages=pages.txt --out_file=live.json --out_pages=extra_pages.txt
 ```

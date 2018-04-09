@@ -11,9 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
+import argparse
 import json
+import os
 
 from botocore.exceptions import ClientError
 from tqdm import tqdm
@@ -21,11 +21,15 @@ from tqdm import tqdm
 from persistence.s3_persistence import S3Writer
 from util.untokenize import untokenize
 
-data_folder = "data"
-page_titles = "pages.txt"
-redirects_file = "redirect.txt"
 
-import os
+parser = argparse.ArgumentParser()
+parser.add_argument('--pages_file', required=True, type=str, help='parse this list of pages')
+parser.add_argument('--redirects_file', required=True, type=str, help='redirects file to read')
+parser.add_argument('--s3_bucket', required=True, type=str, help='s3 bucket to place parsed articles in')
+parser.add_argument('--out_file', required=True, type=str, help='output the WF1 candidate sentences to this file')
+parser.add_argument('--out_pages', required=True, type=str, help='output the extra pages (graph distance 1) here')
+args = parser.parse_args()
+
 
 
 def clean(filename):
@@ -47,7 +51,7 @@ def get_first_line(name):
 
 
 def get_redirects():
-    redirs = os.path.join(data_folder, redirects_file)
+    redirs = args.redirects_file
     rd = dict()
     with open(redirs, "r") as f:
         while True:
@@ -74,7 +78,7 @@ def recursive_redirect_lookup(redirects, word):
 
 
 def get_wiki_entry(name):
-    s3 = S3Writer("com.amazon.evi.fever.wiki")
+    s3 = S3Writer(args.s3_bucket)
     try:
         key = s3.clean("intro/"+name)
 
@@ -91,26 +95,28 @@ def get_wiki_entry(name):
 
 redirects = get_redirects()
 
-pages_file = os.path.join(data_folder, page_titles)
+pages_file = args.pages_file
 
 pages = []
 with open(pages_file, "r")  as f:
     pages.extend([line.strip() for line in f.readlines()])
 
-s3 = S3Writer("com.amazon.evi.fever.wiki")
+
+
+s3 = S3Writer(args.s3_bucket)
 
 global_id = 0
 extra_pages = set()
 
-with open("extra_pages.txt", "r")  as f:
+with open(args.out_pages, "r+")  as f:
     extra_pages.update([line.strip() for line in f.readlines()])
 
 
 done_pages = set()
 
 live = []
-if os.path.exists("data/live.json"):
-    with open("data/live.json","r") as f:
+if os.path.exists(args.out_file):
+    with open(args.out_file,"r") as f:
         live = json.load(f)
 
 for item in tqdm(live,desc="Loading existing claims"):
@@ -189,8 +195,8 @@ for page in tqdm(pages):
         add_page(page,global_id)
         global_id += 1
 
-        with open('data/live.json', 'w+') as outfile:
+        with open(args.out_file, 'w+') as outfile:
             json.dump(live, outfile)
 
-        with open('data/extra_pages.txt', 'w+') as outfile:
+        with open(args.out_pages, 'w+') as outfile:
             outfile.write("\n".join(list(extra_pages)))
