@@ -18,7 +18,7 @@ We used the June 2017 English Wikipedia XML bz2 dump file from [Wikimedia Downlo
 
 ### Environment
 
-Written for Python 3.5+. Requires Java 8.
+Written for Python 3.5+. Requires Java 8 and Gradle.
 
 ```bash
 python3 setup.py install
