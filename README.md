@@ -10,7 +10,8 @@ This repository contains the baseline experiments, the scorer as submodules as w
 ## Get Started
 
 ```
-git clone https://github.com/awslab/fever.git
+git clone https://github.com/awslabs/fever.git
+cd fever
 git submodule init
 git submodule update
 ```
