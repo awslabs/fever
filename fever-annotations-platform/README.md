@@ -10,8 +10,8 @@ python3 setup.py install
 
 ## Guides
 
-* [(optional) Creating the candidate sentences from the Wikipedia dump](src/dataset/README.md)
-* [Running the annotation interface](src/annotation/README.md)
+* [(optional) Creating the candidate sentences from the Wikipedia dump](src/dataset/)
+* [Running the annotation interface](src/annotation/)
 
 
 ## Citation

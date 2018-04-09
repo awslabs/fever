@@ -18,7 +18,7 @@ git submodule update
 
 ## Run the Code
 
- * [Baseline Experiments](fever-baselines/README.md)
- * [Scorer](fever-scorer/README.md)
- * [Dataset Preparation](fever-annotations-platform/README.md)
+ * [Baseline Experiments](https://github.com/sheffieldnlp/fever-baselines)
+ * [Scorer](https://github.com/sheffieldnlp/fever-scorer)
+ * [Dataset Preparation](fever-annotations-platform/)
     
