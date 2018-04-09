@@ -1,0 +1,6 @@
+[submodule "fever-scorer"]
+	path = fever-scorer
+	url = https://github.com/sheffieldnlp/fever-scorer.git
+[submodule "fever-baselines"]
+	path = fever-baselines
+	url = https://github.com/sheffieldnlp/fever-baselines.git
