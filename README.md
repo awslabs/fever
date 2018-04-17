@@ -1,4 +1,4 @@
-![FEVER logo](images/Logo_blue.png)
+[![FEVER logo](images/Logo_blue.png)](http://fever.ai)
 
 # Fact Extraction and VERification
 
