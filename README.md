@@ -1,3 +1,5 @@
+![FEVER logo](images/Logo_blue.png)
+
 # Fact Extraction and VERification
 
 This is the main repository for the dataset and experiments presented in our NAACL2018 paper: [FEVER: A large-scale dataset for Fact Extraction and VERification.](https://arxiv.org/abs/1803.05355)
@@ -16,9 +18,17 @@ git submodule init
 git submodule update
 ```
 
+
+## Download the Data
+
+Visit [http://fever.ai](http://fever.ai) to download the data and find out more about the shared task. 
+    
+
+
 ## Run the Code
 
  * [Baseline Experiments](https://github.com/sheffieldnlp/fever-baselines)
  * [Scorer](https://github.com/sheffieldnlp/fever-scorer)
  * [Dataset Preparation](fever-annotations-platform/)
+
     
