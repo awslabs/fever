@@ -83,13 +83,13 @@ def get_oracle_assignment(session, username):
                        sentence_id=next["sent"])
 
 
-def get_oracle_assignment_master(session, username):
+def get_oracle_assignment_main(session, username):
     next = session.execute("""select cl.*,sentence.entity_id as ent from
     (SELECT claim.id as id, claim.sentence_id as sent,claim.text as text,  max(annotation_assignment.expires) as maxexp from claim
         left join annotation on annotation.claim_id = claim.id
               and annotation.isForReportingOnly = 0
               and annotation.isTestMode = 0
-              and annotation.isOracleMaster = 1
+              and annotation.isOracleMain = 1
         left join annotation_assignment on annotation_assignment.claim_id = claim.id
         where claim.isOracle = 1 and annotation.id IS NULL 
               and claim.testing = 0
@@ -162,8 +162,8 @@ def get_next_assignment(session, username, oracleAnnotatorMode=False, testMode=F
         .count()
 
     if oracleAnnotatorMode:
-        next = get_oracle_assignment_master(session, username)
-        print("Getting oracle master")
+        next = get_oracle_assignment_main(session, username)
+        print("Getting oracle main")
     elif user_done_count % 90 == 89 and not testMode:
         # Do oracle every 90
         next = get_oracle_assignment(session, username)

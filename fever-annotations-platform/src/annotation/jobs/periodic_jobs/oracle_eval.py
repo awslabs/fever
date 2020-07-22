@@ -6,7 +6,7 @@ from annotation.schema.annotations_rds import create_session
 
 session = create_session()
 
-master_list = session.execute(
+main_list = session.execute(
     """
       SELECT
         claim.id                                      AS claim_id,
@@ -16,14 +16,14 @@ master_list = session.execute(
         INNER JOIN annotation ON annotation.claim_id = claim.id
         INNER JOIN annotation_verdict ON annotation_verdict.annotation_id = annotation.id
         INNER JOIN verdict_line ON verdict_line.verdict_id = annotation_verdict.id
-      WHERE annotation.isOracleMaster = 1 and annotation.isForReportingOnly = 0 
+      WHERE annotation.isOracleMain = 1 and annotation.isForReportingOnly = 0 
         and annotation.verifiable<2
         and annotation.isTestMode = 0
         and annotation.version = 4
     """).fetchall()
 
 
-slave_list = session.execute(
+subordinate_list = session.execute(
     """
     select
       annotation.user,
@@ -39,7 +39,7 @@ slave_list = session.execute(
         claim.text                                    AS claimtext
       FROM claim
       INNER JOIN annotation ON annotation.claim_id = claim.id
-      WHERE annotation.isOracleMaster = 1 
+      WHERE annotation.isOracleMain = 1 
       and annotation.isForReportingOnly = 0 
         and annotation.verifiable<2
         and annotation.isTestMode = 0
@@ -48,44 +48,44 @@ slave_list = session.execute(
     ) as t on t.claimid = annotation.claim_id
     INNER JOIN annotation_verdict ON annotation_verdict.annotation_id = annotation.id
     INNER JOIN verdict_line ON verdict_line.verdict_id = annotation_verdict.id
-    where annotation.isOracleMaster = 0 
+    where annotation.isOracleMain = 0 
     and annotation.isForReportingOnly = 0
     and annotation.verifiable<2
     and annotation.isTestMode = 0
     and annotation.version = 4
     """).fetchall()
 
-master_evidence_all = defaultdict(set)
-slave_evidence_all = defaultdict(set)
-slave_evidence_texts = {}
+main_evidence_all = defaultdict(set)
+subordinate_evidence_all = defaultdict(set)
+subordinate_evidence_texts = {}
 
-master_evidence = defaultdict(lambda: defaultdict(set))
-slave_evidence = defaultdict(lambda: defaultdict(set))
+main_evidence = defaultdict(lambda: defaultdict(set))
+subordinate_evidence = defaultdict(lambda: defaultdict(set))
 
-slave_day_evidence = defaultdict(lambda: defaultdict(lambda: defaultdict(set)))
-slave_day_evidence_all = defaultdict(lambda: defaultdict(set))
+subordinate_day_evidence = defaultdict(lambda: defaultdict(lambda: defaultdict(set)))
+subordinate_day_evidence_all = defaultdict(lambda: defaultdict(set))
 
-slave_week_evidence = defaultdict(lambda: defaultdict(lambda: defaultdict(set)))
-slave_week_evidence_all = defaultdict(lambda: defaultdict(set))
+subordinate_week_evidence = defaultdict(lambda: defaultdict(lambda: defaultdict(set)))
+subordinate_week_evidence_all = defaultdict(lambda: defaultdict(set))
 
-for item in master_list:
-    master_evidence_all[item['claim_id']].add(item['oracle'])
-    master_evidence[item['user']][item['claim_id']].add(item['oracle'])
+for item in main_list:
+    main_evidence_all[item['claim_id']].add(item['oracle'])
+    main_evidence[item['user']][item['claim_id']].add(item['oracle'])
 
-for item in slave_list:
-    slave_evidence_all[item['claim_id']].add(item['annotator'])
-    slave_evidence_texts[item['claim_id']] = item['claimtext']
-    slave_day_evidence_all[item['Date']][item['claim_id']].add(item['annotator'])
-    slave_week_evidence_all[item['Week']][item['claim_id']].add(item['annotator'])
+for item in subordinate_list:
+    subordinate_evidence_all[item['claim_id']].add(item['annotator'])
+    subordinate_evidence_texts[item['claim_id']] = item['claimtext']
+    subordinate_day_evidence_all[item['Date']][item['claim_id']].add(item['annotator'])
+    subordinate_week_evidence_all[item['Week']][item['claim_id']].add(item['annotator'])
 
-    slave_evidence[item['user']][item['claim_id']].add(item['annotator'])
-    slave_day_evidence[item['user']][item['Date']][item['claim_id']].add(item['annotator'])
-    slave_week_evidence[item['user']][item['Week']][item['claim_id']].add(item['annotator'])
+    subordinate_evidence[item['user']][item['claim_id']].add(item['annotator'])
+    subordinate_day_evidence[item['user']][item['Date']][item['claim_id']].add(item['annotator'])
+    subordinate_week_evidence[item['user']][item['Week']][item['claim_id']].add(item['annotator'])
 
 
 users = set()
-users.update(master_evidence.keys())
-users.update(slave_evidence.keys())
+users.update(main_evidence.keys())
+users.update(subordinate_evidence.keys())
 
 
 def prec_rec(relevant, retrieved):
@@ -98,8 +98,8 @@ def evidence_missed_by_all(dataset):
     report_html = ""
     missed_claims = defaultdict(list)
     for claim in dataset:
-        relevant = master_evidence_all[claim]
-        retrieved = slave_evidence_all[claim]
+        relevant = main_evidence_all[claim]
+        retrieved = subordinate_evidence_all[claim]
         diff = relevant.difference(retrieved)
         missed_claims[claim].extend(list(diff))
     missed_sorted_keys = sorted(missed_claims.keys(), key=lambda k: len(missed_claims[k]), reverse=True)
@@ -107,7 +107,7 @@ def evidence_missed_by_all(dataset):
         if len(missed_claims[key]) == 0:
             continue
         claim_link = 'https://fever-annotate.corp.amazon.com/#!/label-claims/%d' % key
-        report_html += '<a href=%s>%s</a>\n' % (claim_link, slave_evidence_texts[key])
+        report_html += '<a href=%s>%s</a>\n' % (claim_link, subordinate_evidence_texts[key])
         for missed_claim in sorted(missed_claims[key]):
             report_html += '<li>%s</li>\n' % missed_claim
         report_html += '<br/>'
@@ -120,8 +120,8 @@ def evidence_missed_by_user(dataset, user_set):
         total_missed = 0
         missed_claims = defaultdict(list)
         for claim in dataset:
-            relevant = master_evidence_all[claim]
-            retrieved = slave_evidence[user][claim]
+            relevant = main_evidence_all[claim]
+            retrieved = subordinate_evidence[user][claim]
             diff = relevant.difference(retrieved)
             missed_claims[claim].extend(list(diff))
             total_missed += len(diff)
@@ -133,7 +133,7 @@ def evidence_missed_by_user(dataset, user_set):
             if len(missed_claims[key]) == 0:
                 continue
             claim_link = 'https://fever-annotate.corp.amazon.com/#!/label-claims/%d' % key
-            report_html += '<a href=%s>%s</a>\n' % (claim_link, slave_evidence_texts[key])
+            report_html += '<a href=%s>%s</a>\n' % (claim_link, subordinate_evidence_texts[key])
             for missed_claim in sorted(missed_claims[key]):
                 report_html += '<li>%s</li>\n' % missed_claim
             report_html += '<br/>\n'
@@ -145,8 +145,8 @@ def macro_pr(user, dataset):
     p = []
     r = []
     for claim in dataset:
-        relevant = master_evidence_all[claim]
-        retrieved = slave_evidence[user][claim]
+        relevant = main_evidence_all[claim]
+        retrieved = subordinate_evidence[user][claim]
 
         precision, recall = prec_rec(relevant, retrieved)
         p.append(precision)
@@ -159,8 +159,8 @@ def micro_pr_all(dataset):
     p = []
     r = []
     for claim in dataset:
-        relevant = master_evidence_all[claim]
-        retrieved = slave_evidence_all[claim]
+        relevant = main_evidence_all[claim]
+        retrieved = subordinate_evidence_all[claim]
 
         precision, recall = prec_rec(relevant, retrieved)
         p.append(precision)
@@ -174,11 +174,11 @@ def macro_pr_all_by_user(dataset, user_set):
     r = []
     for user in user_set:
         for claim in dataset:
-            if claim not in slave_evidence[user]:
+            if claim not in subordinate_evidence[user]:
                 continue
 
-            relevant = master_evidence_all[claim]
-            retrieved = slave_evidence[user][claim]
+            relevant = main_evidence_all[claim]
+            retrieved = subordinate_evidence[user][claim]
 
             precision, recall = prec_rec(relevant, retrieved)
             p.append(precision)
@@ -192,7 +192,7 @@ def macro_pr_time_by_user(dataset, user_set, time):
     r = []
     for user in user_set:
         for claim in dataset[user][time]:
-            relevant = master_evidence_all[claim]
+            relevant = main_evidence_all[claim]
             retrieved = dataset[user][time][claim]
 
             precision, recall = prec_rec(relevant, retrieved)
@@ -222,31 +222,31 @@ rracc = 0
 ppacc = 0
 
 for u in users:
-    up, ur = macro_pr(u, slave_evidence[u])
+    up, ur = macro_pr(u, subordinate_evidence[u])
     p_by_user[u] = up
     r_by_user[u] = ur
 
-    for d in slave_day_evidence[u].keys():
-        upd, urd = macro_pr(u, slave_day_evidence[u][d])
+    for d in subordinate_day_evidence[u].keys():
+        upd, urd = macro_pr(u, subordinate_day_evidence[u][d])
 
         p_by_day_by_user[d][u] = upd
         r_by_day_by_user[d][u] = urd
 
-    for d in slave_week_evidence[u].keys():
-        upw, urw = macro_pr(u, slave_week_evidence[u][d])
+    for d in subordinate_week_evidence[u].keys():
+        upw, urw = macro_pr(u, subordinate_week_evidence[u][d])
 
         p_by_week_by_user[d][u] = upw
         r_by_week_by_user[d][u] = urw
 
 
-pp, rr = macro_pr_all_by_user(slave_evidence_all, users)
+pp, rr = macro_pr_all_by_user(subordinate_evidence_all, users)
 print(pp, rr)
 
-for d in slave_day_evidence_all.keys():
-    p_by_day[d], r_by_day[d] = macro_pr_time_by_user(slave_day_evidence, users, d)
+for d in subordinate_day_evidence_all.keys():
+    p_by_day[d], r_by_day[d] = macro_pr_time_by_user(subordinate_day_evidence, users, d)
 
-for d in slave_week_evidence_all.keys():
-    p_by_week[d], r_by_week[d] = macro_pr_time_by_user(slave_week_evidence, users, d)
+for d in subordinate_week_evidence_all.keys():
+    p_by_week[d], r_by_week[d] = macro_pr_time_by_user(subordinate_week_evidence, users, d)
 
 
 def save_csv(filename, header, report):
@@ -334,8 +334,8 @@ save_csv("r_by_week", *date_report("Recall", r_by_week, r_by_week.keys()))
 
 save_csv("pr", ["Precision", "Recall"], [[pp, rr]])
 
-save_html("missed_by_all", evidence_missed_by_all(slave_evidence_all))
-save_html("missed_by_user", evidence_missed_by_user(slave_evidence_all, users))
+save_html("missed_by_all", evidence_missed_by_all(subordinate_evidence_all))
+save_html("missed_by_user", evidence_missed_by_user(subordinate_evidence_all, users))
 
 today = datetime.datetime.utcnow()
 last_week = today + datetime.timedelta(weeks=-1)
