@@ -16,17 +16,7 @@ MySQL can be installed locally or provisioned through a service such as [Amazon 
 
 The annotation targets should be saved to the data directory and saved in live.json, sandbox.json and redirects.txt file.
 
-You may use your own, or use the data we used from the June 2017 Wikipedia dump which are released under the following [license](https://s3-eu-west-1.amazonaws.com/fever.public/license.html)
-
-```
-mkdir data
-wget -O data/license.html https://s3-eu-west-1.amazonaws.com/fever.public/license.html
-cat data/license.html
-
-wget -O data/redirect.txt https://s3-eu-west-1.amazonaws.com/fever.public/annotation_data/redirect.txt
-wget -O data/live.json https://s3-eu-west-1.amazonaws.com/fever.public/annotation_data/live.json
-wget -O data/sandbox.json https://s3-eu-west-1.amazonaws.com/fever.public/annotation_data/sandblox.json
-```
+You may use your own, or use the data we used from the June 2017 Wikipedia dump. Please reach out to our [Slack channel](https://join.slack.com/t/feverworkshop/shared_invite/zt-4v1hjl8w-Uf4yg~diftuGvj2fvw7PDA) if you want to request access to those files.
 
 ### Environment
 
