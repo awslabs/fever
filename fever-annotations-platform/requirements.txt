@@ -2,7 +2,7 @@ nltk
 statsmodels
 botocore >= 1.9.23
 boto3
-PyMySQL == 0.7.9
+PyMySQL == 1.1.1
 mwparserfromhell == 0.4.4
 SQLAlchemy == 1.3.0
 Flask == 2.3.2
